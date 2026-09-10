@@ -471,22 +471,92 @@
 
         if (Notification.permission === 'granted') {
             trigger();
+            subscribeUserToPush();
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission().then(function(permission) {
                 if (permission === 'granted') {
                     trigger();
+                    subscribeUserToPush();
                 }
             });
         }
     };
 
-    // Register Service Worker and Proactively Request Notification Permission on user interaction
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(function() {});
+    // 🟢 Background Web Push Subscription Helpers
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
     }
+
+    function sendSubscriptionToServer(subscription) {
+        try {
+            const subData = subscription.toJSON();
+            fetch('{{ route("push.subscribe") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    endpoint: subData.endpoint,
+                    keys: subData.keys,
+                    device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                })
+            }).catch(function() {});
+        } catch(e) {}
+    }
+
+    function subscribeUserToPush() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+        navigator.serviceWorker.ready.then(function(registration) {
+            return registration.pushManager.getSubscription().then(function(subscription) {
+                if (subscription) {
+                    return sendSubscriptionToServer(subscription);
+                }
+
+                const vapidPublicKey = '{{ env("VAPID_PUBLIC_KEY", "BKxeNffS8w9m0gPbapKT59yDxq4iEHLHKodzvwH9vylCPqXw7MNhesdBtnPjEhefvKs99b6CTLv5bv0wMBv4Zzo") }}';
+                const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+                return registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidKey
+                }).then(function(newSubscription) {
+                    return sendSubscriptionToServer(newSubscription);
+                });
+            });
+        }).catch(function(err) {
+            console.log('Push subscription error:', err);
+        });
+    }
+
+    // Register Service Worker and Request Notification Permission on user interaction
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then(function() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                subscribeUserToPush();
+            }
+        }).catch(function() {});
+    }
+
     document.addEventListener('click', function requestNotifPermissionOnce() {
         if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().catch(function() {});
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    subscribeUserToPush();
+                }
+            }).catch(function() {});
+        } else if ('Notification' in window && Notification.permission === 'granted') {
+            subscribeUserToPush();
         }
     }, { once: true });
 

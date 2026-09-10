@@ -30,6 +30,12 @@ Route::get('/clear-cache', function () {
     return 'Laravel Cache Cleared Successfully!';
 });
 
+// ROUTE TO INITIALIZE PUSH SUBSCRIPTION TABLE
+Route::get('/run-push-migration', function () {
+    \App\Services\WebPushService::ensureTableExists();
+    return 'Push subscriptions table verified and ready!';
+});
+
 // ROUTE TO PROMOTE LOGGED IN USER TO ADMIN
 Route::get('/make-me-admin', function () {
     if (!Auth::check()) {
@@ -92,6 +98,69 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
     Route::post('/messages/read', [DashboardController::class, 'markAsRead'])->name('messages.read');
     Route::post('/messages/read-status/{user}', [DashboardController::class, 'clearChatBadgesLocally'])->name('messages.readStatusLive');
     Route::get('/messages/thread/{user}', [DashboardController::class, 'getConversationMessages'])->name('messages.thread');
+
+    // --- WEB PUSH NOTIFICATIONS ---
+    Route::post('/api/push-subscribe', function (\Illuminate\Http\Request $request) {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        $endpoint = $request->input('endpoint');
+        $key = $request->input('keys.p256dh');
+        $token = $request->input('keys.auth');
+        $deviceType = $request->input('device_type', 'browser');
+
+        if (!$endpoint) {
+            return response()->json(['success' => false, 'message' => 'Endpoint missing'], 422);
+        }
+
+        \App\Services\WebPushService::ensureTableExists();
+
+        DB::table('push_subscriptions')->updateOrInsert(
+            ['endpoint' => $endpoint],
+            [
+                'user_id' => $user->user_id,
+                'public_key' => $key,
+                'auth_token' => $token,
+                'device_type' => $deviceType,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        return response()->json(['success' => true, 'message' => 'Push subscription saved.']);
+    })->name('push.subscribe');
+
+    Route::post('/api/push-unsubscribe', function (\Illuminate\Http\Request $request) {
+        $endpoint = $request->input('endpoint');
+        if ($endpoint) {
+            \App\Services\WebPushService::ensureTableExists();
+            DB::table('push_subscriptions')->where('endpoint', $endpoint)->delete();
+        }
+        return response()->json(['success' => true]);
+    })->name('push.unsubscribe');
+
+    Route::get('/test-push', function () {
+        $user = Auth::user();
+        if (!$user) return redirect('/login');
+
+        $sent = \App\Services\WebPushService::sendToUser(
+            $user->user_id,
+            '🔔 Test Background Alert',
+            'SecureLab Background Push is working! You will receive alerts even when your browser tab is closed.',
+            route('dashboard.alerts') . '?popup_alert=1&title=Test%20Background%20Alert&body=SecureLab%20Background%20Push%20works!&type=doorbell',
+            'doorbell'
+        );
+
+        return response()->json([
+            'success' => true,
+            'sent_count' => $sent,
+            'message' => $sent > 0 
+                ? "Background push sent to {$sent} registered device(s)!" 
+                : "No active push subscription found for this browser. Please allow notifications on this site first."
+        ]);
+    })->name('push.test');
 
     // --- AUTHORIZED ACCESS & REMOTE CONTROL ---
     Route::get('/my-assigned-rooms', [DashboardController::class, 'myRooms'])->name('rooms.my');

@@ -605,6 +605,15 @@ class DashboardController extends Controller
                 'sent_at' => now()
             ]);
 
+            // 🟢 Send background Web Push to receiver (pops up even if receiver's tab is closed)
+            \App\Services\WebPushService::sendToUser(
+                (int) $receiverId,
+                '💬 ' . Auth::user()->full_name,
+                $notificationBody,
+                url('/messages?user=' . $userId),
+                'chat'
+            );
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -1593,6 +1602,14 @@ class DashboardController extends Controller
                     'sent_at' => now()
                 ]);
             }
+
+            // 🟢 Send background Web Push to Admins (pops up even if browser tab is closed)
+            \App\Services\WebPushService::sendToAdmins(
+                '🚨 CRITICAL: Forced Entry',
+                'A simulated forced entry was recorded at Room ID: ' . $roomId,
+                url('/alerts?popup_alert=1&title=' . urlencode('🚨 CRITICAL: Forced Entry') . '&body=' . urlencode('A simulated forced entry was recorded at Room ID: ' . $roomId) . '&type=intrusion_alert'),
+                'intrusion_alert'
+            );
         } catch (\Exception $e) {
             Log::error('Simulation Notification Alert Failed: ' . $e->getMessage());
         }

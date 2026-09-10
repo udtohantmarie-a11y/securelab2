@@ -91,10 +91,20 @@ self.addEventListener('notificationclick', (event) => {
 
 // Handle Background Push Event (Web Push API)
 self.addEventListener('push', (event) => {
-    let data = { title: 'SecureLab Smart Access', body: 'New security update available.', url: '/' };
+    let data = { 
+        title: '🔔 SecureLab Smart Access', 
+        body: 'New security update available.', 
+        url: '/',
+        type: 'general',
+        icon: '/assets/img/tpc-logo.jpg',
+        badge: '/assets/img/tpc-logo.jpg',
+        vibrate: [200, 100, 200, 100, 200]
+    };
+
     try {
         if (event.data) {
-            data = event.data.json();
+            const parsed = event.data.json();
+            data = Object.assign(data, parsed);
         }
     } catch (e) {
         data.body = event.data ? event.data.text() : data.body;
@@ -102,10 +112,15 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: '/assets/img/tpc-logo.jpg',
-        badge: '/assets/img/tpc-logo.jpg',
-        vibrate: [200, 100, 200],
-        data: { url: data.url || '/' }
+        icon: data.icon || '/assets/img/tpc-logo.jpg',
+        badge: data.badge || '/assets/img/tpc-logo.jpg',
+        vibrate: data.vibrate || [200, 100, 200],
+        tag: data.tag || ('securelab-' + Date.now()),
+        renotify: true,
+        data: { 
+            url: data.url || '/',
+            type: data.type || 'general'
+        }
     };
 
     event.waitUntil(

@@ -172,6 +172,12 @@ class HardwareController extends Controller
             ]);
 
             $this->sendOneSignalPush('⚠️ Access Denied', 'An unregistered fingerprint tried to access ' . $room->room_name);
+            \App\Services\WebPushService::sendToAdmins(
+                '⚠️ Access Denied: ' . $room->room_name,
+                'An unregistered fingerprint tried to access ' . $room->room_name,
+                url('/alerts?popup_alert=1&title=' . urlencode('⚠️ Access Denied: ' . $room->room_name) . '&body=' . urlencode('Unregistered fingerprint scan rejected') . '&type=intrusion_alert'),
+                'intrusion_alert'
+            );
 
             return response()->json([
                 'access' => 'denied',
@@ -202,6 +208,12 @@ class HardwareController extends Controller
             ]);
 
             $this->sendOneSignalPush('⚠️ Access Denied', $user->full_name . ' tried to access ' . $room->room_name . ' but their permission is revoked.');
+            \App\Services\WebPushService::sendToAdmins(
+                '⚠️ Access Denied: ' . $room->room_name,
+                $user->full_name . ' tried to access ' . $room->room_name . ' but permission is revoked.',
+                url('/alerts?popup_alert=1&title=' . urlencode('⚠️ Access Denied: ' . $room->room_name) . '&body=' . urlencode('Revoked permission access attempt') . '&type=intrusion_alert'),
+                'intrusion_alert'
+            );
 
             return response()->json([
                 'access' => 'denied',
@@ -323,6 +335,14 @@ class HardwareController extends Controller
 
         $this->sendOneSignalPush($notifTitle, $notifBody);
 
+        // 🟢 Background Native Web Push (Works even when browser tab/app is closed)
+        \App\Services\WebPushService::sendToAdmins(
+            $notifTitle,
+            $notifBody,
+            url('/alerts?popup_alert=1&title=' . urlencode($notifTitle) . '&body=' . urlencode($notifBody) . '&type=doorbell'),
+            'doorbell'
+        );
+
         return response()->json(['status' => 'success', 'message' => 'Doorbell broadcasted.']);
     }
 
@@ -384,6 +404,14 @@ class HardwareController extends Controller
         }
 
         $this->sendOneSignalPush($notifTitle, $description);
+
+        // 🟢 Background Native Web Push (Works even when browser tab/app is closed)
+        \App\Services\WebPushService::sendToAdmins(
+            $notifTitle,
+            $description,
+            url('/alerts?popup_alert=1&title=' . urlencode($notifTitle) . '&body=' . urlencode($description) . '&type=intrusion_alert'),
+            'intrusion_alert'
+        );
 
         return response()->json(['status' => 'success', 'message' => 'Alert logged and admins notified.']);
     }
