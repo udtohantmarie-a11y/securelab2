@@ -828,13 +828,8 @@
                 chatForm.addEventListener('submit', function(e) {
                     e.preventDefault();
 
-                    clearTimeout(pollingTimer); 
-                    if(pollController) {
-                        pollController.abort(); 
-                    }
-
                     const submitBtn = this.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
+                    if (submitBtn) submitBtn.disabled = true;
 
                     const formData = new FormData(this);
 
@@ -851,15 +846,13 @@
                         } else {
                             let errData = await response.json();
                             alert(errData.message || 'Error sending message. The file might be too large or invalid.');
-                            submitBtn.disabled = false;
-                            pollingTimer = setTimeout(startPolling, 3000); 
+                            if (submitBtn) submitBtn.disabled = false;
                         }
                     })
                     .catch(error => {
                         console.error('Upload Error:', error);
                         alert('A critical error occurred while sending your message. Please check file sizes and your network connection.');
-                        submitBtn.disabled = false;
-                        pollingTimer = setTimeout(startPolling, 3000);
+                        if (submitBtn) submitBtn.disabled = false;
                     });
                 });
 
