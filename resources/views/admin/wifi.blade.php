@@ -91,6 +91,13 @@
             <!-- Page Header -->
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-wifi me-1"></i> IOT NETWORK SYNCHRONIZER
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">ESP8266 2.4 GHz Node</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Hardware WiFi Configuration</h4>
                     <p class="text-muted small mb-0 mt-1">Update the main school network credentials for all IoT door locks.</p>
                 </div>
@@ -114,7 +121,7 @@
             <!-- Main Configuration Card -->
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 col-xl-6">
-                    <div class="dashboard-card p-3 p-sm-4 p-md-5 mt-2">
+                    <div class="dashboard-card p-3 p-sm-4 p-md-5 mt-2" style="border-top: 3.5px solid #00d2ff !important;">
                         <i class="fas fa-wifi watermark-icon text-primary"></i>
                         
                         <div class="text-center mb-4 pb-3 border-bottom" style="border-color: var(--border-color) !important;">

@@ -105,6 +105,13 @@
         <div class="container-fluid px-0">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 no-print">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-file-contract me-1"></i> COMPREHENSIVE AUDIT ARCHIVE
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Official Audit Reports</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">System Access Reports</h4>
                     <p class="text-muted small mb-0 mt-1">Comprehensive record of all laboratory access, biometric scans, and overrides.</p>
                 </div>
@@ -117,7 +124,7 @@
             </div>
 
             <!-- 🟢 ADVANCED FILTER TOOLBAR (No-Print) -->
-            <div class="dashboard-card p-3 p-md-4 mb-4 no-print border-start border-4 border-primary">
+            <div class="dashboard-card p-3 p-md-4 mb-4 no-print" style="border-top: 3.5px solid #2563eb !important;">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 gap-2">
                     <h6 class="fw-bold text-dark mb-0"><i class="fas fa-filter text-primary me-2"></i>Filter & Search Records</h6>
                     <div class="d-flex gap-2 flex-wrap">

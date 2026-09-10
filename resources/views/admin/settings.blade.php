@@ -122,6 +122,13 @@
         <div class="container-fluid px-0">
             <div class="mb-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-sliders me-1"></i> MASTER SYSTEM CONFIGURATION
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Parameters & Integrations</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ Auth::user()->role == 'Admin' ? 'System Settings' : 'Account Settings' }}</h4>
                     <p class="text-muted small mb-0 mt-1">Configure global parameters and security preferences for SecureLab.</p>
                 </div>
@@ -144,7 +151,7 @@
             <div class="row">
                 <!-- 🟢 SIDEBAR TABS -->
                 <div class="col-12 col-lg-3 mb-4">
-                    <div class="dashboard-card p-3 h-100">
+                    <div class="dashboard-card p-3 h-100" style="border-top: 3.5px solid #2563eb !important;">
                         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <button class="nav-link active text-start" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button">
                                 <i class="fas fa-user-shield me-2 w-20px text-center"></i> Account & Security
@@ -171,7 +178,7 @@
 
                         <!-- ACCOUNT & SECURITY TAB -->
                         <div class="tab-pane fade show active" id="security" role="tabpanel">
-                            <div class="dashboard-card p-4">
+                            <div class="dashboard-card p-4" style="border-top: 3.5px solid #10b981 !important;">
                                 <i class="fas fa-shield-alt watermark-icon"></i>
                                 
                                 @if(Auth::user()->role == 'Admin')

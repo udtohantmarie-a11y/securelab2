@@ -109,6 +109,13 @@
 
         <div class="container-fluid px-0">
             <div class="mb-4">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                        <i class="fas fa-shield-halved me-1"></i> IDENTITY & CREDENTIAL SECURITY
+                    </span>
+                    <span class="text-muted small">•</span>
+                    <span class="text-muted small fw-medium">Active Session Profile</span>
+                </div>
                 <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">Account Settings & Credentials</h4>
                 <p class="small mb-0" style="color: var(--text-muted);">Manage your personal identity, biometric enrollment assets, and password security.</p>
             </div>
@@ -143,7 +150,7 @@
             <div class="row g-4">
                 <!-- LEFT COLUMN: PROFILE SUMMARY -->
                 <div class="col-lg-4 col-md-5">
-                    <div class="profile-card-executive p-4 text-center h-100">
+                    <div class="profile-card-executive p-4 text-center h-100" style="border-top: 3.5px solid #2563eb;">
                         <i class="fas fa-id-badge watermark-icon"></i>
                         
                         <div class="mb-3 position-relative d-inline-block mx-auto mt-2">
@@ -238,7 +245,7 @@
 
                 <!-- RIGHT COLUMN: FORMS AREA -->
                 <div class="col-lg-8 col-md-7">
-                    <div class="profile-card-executive p-4 h-100">
+                    <div class="profile-card-executive p-4 h-100" style="border-top: 3.5px solid #10b981;">
                         <i class="fas fa-sliders-h watermark-icon"></i>
                         <ul class="nav nav-pills nav-pills-executive mb-4 pb-3 flex-nowrap overflow-auto" id="pills-tab" role="tablist" style="border-bottom: 1px solid var(--border-color); white-space: nowrap;">
                             <li class="nav-item" role="presentation">

@@ -80,12 +80,73 @@
         <div class="container-fluid px-0">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-user-clock me-1"></i> ACCESS GATEWAY VERIFICATION
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Identity Onboarding</span>
+                    </div>
                     <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">Pending User Approvals</h4>
                     <p class="small mb-0" style="color: var(--text-muted);">Review pending registration submissions before granting biometric and lab system access.</p>
                 </div>
             </div>
 
-            <div class="card pending-card-executive mb-4">
+            <!-- 🟢 PENDING REGISTRATION OVERVIEW STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="pending-card-executive p-3 h-100" style="border-top: 3.5px solid #f59e0b;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Pending In Queue</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-warning" style="width: 34px; height: 34px; background: rgba(245, 158, 11, 0.12); font-size: 13px;">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ count($pendingUsers) }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Awaiting verification</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="pending-card-executive p-3 h-100" style="border-top: 3.5px solid #2563eb;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Faculty Requests</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(37, 99, 235, 0.12); font-size: 13px;">
+                                <i class="fas fa-chalkboard-user"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($pendingUsers)->where('role', 'Faculty')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Teaching personnel</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="pending-card-executive p-3 h-100" style="border-top: 3.5px solid #8b5cf6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Staff Requests</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-user-gear"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($pendingUsers)->where('role', 'Staff')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Laboratory personnel</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="pending-card-executive p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Queue State</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-shield-check"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-0 {{ count($pendingUsers) > 0 ? 'text-warning' : 'text-success' }}" style="letter-spacing: -0.3px; font-size: 1.1rem; line-height: 1.5;">
+                            {{ count($pendingUsers) > 0 ? 'Review Needed' : 'Queue Empty' }}
+                        </h5>
+                        <small class="text-muted" style="font-size: 11px;">Verification status</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card pending-card-executive mb-4" style="border-top: 3.5px solid #f59e0b;">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-pending align-middle mb-0">

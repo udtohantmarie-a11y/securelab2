@@ -157,6 +157,13 @@
 
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-users-gear me-1"></i> PERSONNEL DIRECTORY
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">User Database</span>
+                    </div>
                     <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">User Database & Personnel</h4>
                     <p class="small mb-0" style="color: var(--text-muted);">Manage system accounts, access privilege levels, and administrative credentials.</p>
                 </div>
@@ -166,6 +173,58 @@
                         <i class="fas fa-user-plus me-2"></i> Add User
                     </button>
                     <div id="userTableActions"></div>
+                </div>
+            </div>
+
+            <!-- 🟢 PERSONNEL DIRECTORY OVERVIEW STRIP -->
+            <div class="row g-3 mb-4 no-print">
+                <div class="col-6 col-md-3">
+                    <div class="user-card-executive p-3 h-100" style="border-top: 3.5px solid #2563eb;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Total Accounts</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(37, 99, 235, 0.12); font-size: 13px;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ count($users) }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Registered personnel</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="user-card-executive p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Administrators</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ collect($users)->where('role', 'Admin')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Full system access</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="user-card-executive p-3 h-100" style="border-top: 3.5px solid #ef4444;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-danger text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Deans & Heads</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-danger" style="width: 34px; height: 34px; background: rgba(239, 68, 68, 0.12); font-size: 13px;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-danger" style="letter-spacing: -0.5px;">{{ collect($users)->where('role', 'Dean')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Executive clearance</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="user-card-executive p-3 h-100" style="border-top: 3.5px solid #8b5cf6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Faculty & Staff</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-chalkboard-user"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($users)->whereNotIn('role', ['Admin', 'Dean'])->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Instructors & staff</small>
+                    </div>
                 </div>
             </div>
 
@@ -188,7 +247,7 @@
                 </div>
             @endif
 
-            <div class="card user-card-executive mb-4">
+            <div class="card user-card-executive mb-4" style="border-top: 3.5px solid #2563eb;">
                 <div class="table-responsive">
                     <table id="usersTable" class="table table-hover align-middle mb-0 w-100 dt-responsive nowrap">
                         <thead>

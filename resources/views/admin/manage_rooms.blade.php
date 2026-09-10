@@ -129,6 +129,13 @@
             <!-- Header Title and Actions -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-building me-1"></i> FACILITY & ROOM HUBS
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">BSIS Laboratories</span>
+                    </div>
                     <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">Laboratory Infrastructure</h4>
                     <p class="mb-0 small" style="color: var(--text-muted);">Manage physical rooms, IoT node connectivity, capacities, and emergency hotspot parameters.</p>
                 </div>
@@ -136,6 +143,58 @@
                     <i class="fas fa-plus"></i>
                     <span>Add New Room</span>
                 </button>
+            </div>
+
+            <!-- 🟢 INFRASTRUCTURE OVERVIEW STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="room-card-executive p-3 h-100" style="border-top: 3.5px solid #2563eb;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Registered Hubs</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(37, 99, 235, 0.12); font-size: 13px;">
+                                <i class="fas fa-door-closed"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ count($rooms) }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Total laboratories</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-card-executive p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Active Nodes</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ collect($rooms)->where('is_active', 1)->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Hardware connected</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-card-executive p-3 h-100" style="border-top: 3.5px solid #8b5cf6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Seat Capacity</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($rooms)->sum('capacity') }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Total student stations</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-card-executive p-3 h-100" style="border-top: 3.5px solid #00d2ff;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Climate Control</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-info" style="width: 34px; height: 34px; background: rgba(0, 210, 255, 0.12); font-size: 13px;">
+                                <i class="fas fa-snowflake"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($rooms)->where('is_air_conditioned', 1)->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Air-conditioned rooms</small>
+                    </div>
+                </div>
             </div>
 
             @if(session('success'))
@@ -155,7 +214,7 @@
             <div class="row g-3 g-md-4">
                 @forelse($rooms as $room)
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="room-card-executive h-100 p-3 p-md-4 d-flex flex-column">
+                        <div class="room-card-executive h-100 p-3 p-md-4 d-flex flex-column" style="border-top: 3.5px solid {{ $room->is_active ? '#10b981' : '#64748b' }} !important;">
                             <i class="fas fa-server watermark-icon"></i>
                             
                             <div class="d-flex justify-content-between align-items-start mb-3">

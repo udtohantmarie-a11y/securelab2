@@ -77,6 +77,13 @@
 
         <div class="container-fluid px-0">
             <div class="mb-4">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                        <i class="fas fa-chart-line me-1"></i> TELEMETRY & BEHAVIORAL INTELLIGENCE
+                    </span>
+                    <span class="text-muted small">•</span>
+                    <span class="text-muted small fw-medium">Operational Trends</span>
+                </div>
                 <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Usage Analytics</h4>
                 <p class="text-muted small mb-0 mt-1">Visual overview of system operations and laboratory access trends.</p>
             </div>
@@ -104,7 +111,7 @@
 
             <div class="row mb-4 g-3 g-md-4">
                 <div class="col-12 col-md-6">
-                    <div class="dashboard-card h-100 p-3 p-md-4">
+                    <div class="dashboard-card h-100 p-3 p-md-4" style="border-top: 3.5px solid #2563eb !important;">
                         <i class="fas fa-chart-pie watermark-icon"></i>
                         <div class="d-flex align-items-center">
                             <div class="stat-icon-wrapper bg-gradient-primary me-3 me-md-4">
@@ -118,7 +125,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <div class="dashboard-card h-100 p-3 p-md-4">
+                    <div class="dashboard-card h-100 p-3 p-md-4" style="border-top: 3.5px solid #ef4444 !important;">
                         <i class="fas fa-shield-alt watermark-icon text-danger"></i>
                         <div class="d-flex align-items-center">
                             <div class="stat-icon-wrapper bg-gradient-danger me-3 me-md-4">
@@ -135,7 +142,7 @@
 
             <div class="row g-3 g-md-4">
                 <div class="col-12 col-lg-8 mb-4">
-                    <div class="dashboard-card p-3 p-md-4 h-100">
+                    <div class="dashboard-card p-3 p-md-4 h-100" style="border-top: 3.5px solid #10b981 !important;">
                         <i class="fas fa-chart-bar watermark-icon"></i>
                         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: var(--border-color, rgba(0,0,0,0.08)) !important;">
                             <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-line text-primary me-2"></i> Access Distribution</h5>
@@ -147,7 +154,7 @@
                 </div>
                 
                 <div class="col-12 col-lg-4 mb-4">
-                    <div class="dashboard-card p-3 p-md-4 h-100">
+                    <div class="dashboard-card p-3 p-md-4 h-100" style="border-top: 3.5px solid #8b5cf6 !important;">
                         <i class="fas fa-list watermark-icon"></i>
                         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: var(--border-color, rgba(0,0,0,0.08)) !important;">
                             <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clipboard-list text-primary me-2"></i> Summary Breakdown</h5>

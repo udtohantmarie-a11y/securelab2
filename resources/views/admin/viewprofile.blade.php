@@ -177,6 +177,13 @@
         <div class="container-fluid px-0">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-id-card me-1"></i> PERSONNEL CREDENTIAL AUDIT
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Record Verification</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">User Profile</h4>
                     <p class="text-muted small mb-0">Viewing credentials and authorization for <strong class="text-primary">{{ $viewUser->full_name }}</strong></p>
                 </div>
@@ -200,7 +207,7 @@
             <div class="row g-4">
                 <!-- 🟢 LEFT COLUMN: PROFILE CARD -->
                 <div class="col-12 col-xl-4">
-                    <div class="dashboard-card p-4 text-center h-100">
+                    <div class="dashboard-card p-4 text-center h-100" style="border-top: 3.5px solid #2563eb !important;">
                         <i class="fas fa-id-badge watermark-icon"></i>
                         
                         <div class="mb-4 position-relative d-inline-block mx-auto mt-2">
@@ -321,7 +328,7 @@
                     </div>
 
                     <!-- Main Tab Content -->
-                    <div class="dashboard-card p-4">
+                    <div class="dashboard-card p-4" style="border-top: 3.5px solid #10b981 !important;">
                         <i class="fas fa-chart-pie watermark-icon"></i>
                         <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">

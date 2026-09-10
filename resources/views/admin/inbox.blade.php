@@ -8,6 +8,7 @@
             height: calc(100vh - 165px);
             border-radius: 22px;
             border: 1px solid var(--border-color);
+            border-top: 3.5px solid #2563eb !important;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
             overflow: hidden;
             background: var(--bg-surface);
@@ -233,8 +234,15 @@
                     <div class="col-lg-4 col-md-5 contact-list">
                         <div class="p-3" style="border-bottom: 1px solid var(--border-color);">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h5 class="fw-bold mb-0 d-none d-md-block" style="color: var(--text-main); letter-spacing: -0.3px;">Conversations</h5>
-                                <span class="badge rounded-pill fw-semibold d-none d-md-inline-block" style="background: rgba(37, 99, 235, 0.1); color: #2563eb; font-size: 0.72rem;">Encrypted</span>
+                                <div>
+                                    <h5 class="fw-bold mb-0 d-none d-md-block" style="color: var(--text-main); letter-spacing: -0.3px;">Conversations</h5>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-0.5 rounded-pill fw-bold d-none d-md-inline-block mt-1" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                                        <i class="fas fa-shield-alt me-1"></i> SECURE COMMS HUB
+                                    </span>
+                                </div>
+                                <span class="badge rounded-pill fw-semibold d-none d-md-inline-block" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); font-size: 0.72rem;">
+                                    <i class="fas fa-satellite-dish me-1"></i> LIVE CHAT
+                                </span>
                             </div>
                             <input type="text" id="contactSearchInput" class="form-control search-bar" placeholder="Search SecureLab...">
                         </div>
@@ -455,11 +463,16 @@
                         @else
                             <div class="h-100 d-flex align-items-center justify-content-center text-center p-5">
                                 <div>
-                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: rgba(37, 99, 235, 0.1); color: #2563eb; font-size: 36px;">
-                                        <i class="far fa-comments"></i>
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: rgba(37, 99, 235, 0.1); color: #2563eb; font-size: 36px; border: 2px dashed rgba(37, 99, 235, 0.3);">
+                                        <i class="fas fa-satellite-dish"></i>
                                     </div>
-                                    <h5 class="fw-bold mb-1" style="color: var(--text-main);">Your Messaging Center</h5>
-                                    <p class="small" style="color: var(--text-muted); max-width: 320px;">Select an active user from the sidebar to view conversation history or start a new thread.</p>
+                                    <h5 class="fw-bold mb-1" style="color: var(--text-main);">Official Comms Terminal</h5>
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold" style="font-size: 10px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-lock me-1"></i> END-TO-END SECURE CHANNEL
+                                        </span>
+                                    </div>
+                                    <p class="small text-muted" style="max-width: 340px; margin: 0 auto;">Select any verified personnel or administrator from the sidebar to inspect telemetry, view audit communications, or dispatch direct notices.</p>
                                 </div>
                             </div>
                         @endif

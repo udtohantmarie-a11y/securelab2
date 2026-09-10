@@ -112,12 +112,75 @@
             <!-- HEADER -->
             <div class="d-flex justify-content-between align-items-center mb-4 responsive-header">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-shield-alt me-1"></i> ACCESS CONTROL MATRIX
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Room Clearances</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">User Access Management</h4>
                     <p class="text-muted small mb-0 mt-1">Authorize faculty, staff, and personnel permissions per laboratory room.</p>
                 </div>
                 <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-xs d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#assignAccessModal">
                     <i class="fas fa-plus-circle"></i> Grant New Access
                 </button>
+            </div>
+
+            @php
+                $groupedAssignments = collect($assignments)->groupBy('room_name');
+            @endphp
+
+            <!-- 🟢 ACCESS MATRIX OVERVIEW STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="room-access-card p-3 h-100" style="border-top: 3.5px solid #2563eb;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Total Clearances</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(37, 99, 235, 0.12); font-size: 13px;">
+                                <i class="fas fa-id-card-clip"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ count($assignments) }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Active assignments</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-access-card p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Authorized Users</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ collect($assignments)->pluck('user_id')->unique()->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Personnel with clearance</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-access-card p-3 h-100" style="border-top: 3.5px solid #8b5cf6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Covered Hubs</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $groupedAssignments->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Rooms with personnel</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-access-card p-3 h-100" style="border-top: 3.5px solid #00d2ff;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Full Access</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-info" style="width: 34px; height: 34px; background: rgba(0, 210, 255, 0.12); font-size: 13px;">
+                                <i class="fas fa-key"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($assignments)->where('access_level', 'full')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Unrestricted control</small>
+                    </div>
+                </div>
             </div>
 
             <!-- FLASH ALERTS -->
@@ -142,15 +205,10 @@
                 </div>
             @endif
 
-            <!-- GROUPING LOGIC (Laravel Blade) -->
-            @php
-                $groupedAssignments = collect($assignments)->groupBy('room_name');
-            @endphp
-
             @forelse($groupedAssignments as $roomName => $group)
                 @php $currentRoomId = $group->first()->room_id; @endphp
                 
-                <div class="room-access-card p-4 mb-4">
+                <div class="room-access-card p-4 mb-4" style="border-top: 3.5px solid #2563eb;">
                     <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom responsive-header" style="border-color: var(--border-color) !important;">
                         <div class="d-flex align-items-center gap-3">
                             <div class="room-badge-icon shadow-xs">

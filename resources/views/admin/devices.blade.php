@@ -118,6 +118,13 @@
 
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-microchip me-1"></i> IOT HARDWARE TELEMETRY
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">NodeMCU ESP8266 Hubs</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">IoT Device Management</h4>
                     <p class="text-muted small mb-0 mt-1">Monitor hardware vitals, signal strength, storage, and power status.</p>
                 </div>
@@ -126,10 +133,65 @@
                 </button>
             </div>
 
+            <!-- 🟢 HARDWARE VITALS SUMMARY STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="dashboard-card p-3 h-100" style="border-top: 3.5px solid #00d2ff !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Registered Nodes</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-info" style="width: 34px; height: 34px; background: rgba(0, 210, 255, 0.12); font-size: 13px;">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ count($devices) }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Hardware MCU units</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dashboard-card p-3 h-100" style="border-top: 3.5px solid #10b981 !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Active Nodes</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-server"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ collect($devices)->where('is_online', 1)->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Online & transmitting</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dashboard-card p-3 h-100" style="border-top: 3.5px solid #f59e0b !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-warning text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Average Battery</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-warning" style="width: 34px; height: 34px; background: rgba(245, 158, 11, 0.12); font-size: 13px;">
+                                <i class="fas fa-battery-three-quarters"></i>
+                            </div>
+                        </div>
+                        @php
+                            $avgBattery = count($devices) > 0 ? round(collect($devices)->avg('battery_pct')) : 100;
+                        @endphp
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $avgBattery }}%</h3>
+                        <small class="text-muted" style="font-size: 11px;">12V auxiliary power</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dashboard-card p-3 h-100" style="border-top: 3.5px solid #8b5cf6 !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Optimal Link</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ collect($devices)->where('wifi_signal_dbm', '>', -75)->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Signal > -75 dBm</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-3 g-md-4" id="devices-container">
                 @forelse($devices as $device)
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="dashboard-card h-100 p-3 p-md-4">
+                        <div class="dashboard-card h-100 p-3 p-md-4" style="border-top: 3.5px solid {{ $device->is_online ? '#10b981' : '#ef4444' }} !important;">
                             <i class="fas fa-microchip watermark-icon"></i>
                             
                             <div class="d-flex justify-content-between align-items-start mb-4">
