@@ -241,20 +241,21 @@
                                 </p>
 
                                 @php
-                                    $hasPasskey = Auth::user()->passkeys()->exists();
+                                    $userPasskeys = \DB::table('passkeys')->where('user_id', Auth::id())->get();
+                                    $hasPasskey = $userPasskeys->isNotEmpty();
                                 @endphp
 
                                 @if($hasPasskey)
-                                    <div class="alert border-0 d-flex justify-content-between align-items-center mb-0 shadow-sm" style="background-color: rgba(32, 201, 151, 0.15); color: #0f5132; border-radius: 16px; border: 1px solid rgba(32, 201, 151, 0.3) !important;">
+                                    <div class="alert border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-0 shadow-sm" style="background-color: rgba(32, 201, 151, 0.15); color: #0f5132; border-radius: 16px; border: 1px solid rgba(32, 201, 151, 0.3) !important;">
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-check-circle fa-2x me-3 text-success"></i>
                                             <div>
-                                                <h6 class="fw-bold mb-0 text-dark">Device is Registered</h6>
-                                                <span class="text-muted" style="font-size: 11px;">You can use this device to sign in securely.</span>
+                                                <h6 class="fw-bold mb-0 text-dark">Device is Registered ({{ $userPasskeys->count() }} active)</h6>
+                                                <span class="text-muted" style="font-size: 11px;">You can use this device to sign in securely with your biometrics.</span>
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-4" data-bs-toggle="modal" data-bs-target="#removePasskeyModal">
-                                            Remove
+                                            Remove Passkey
                                         </button>
                                     </div>
                                 @else
@@ -422,7 +423,7 @@
                                 <!-- End of School Year Cleanup -->
                                 <div class="p-4 rounded-4" style="background-color: rgba(220, 53, 69, 0.07); border: 1px solid rgba(220, 53, 69, 0.2); border-radius: 18px;">
                                     <h6 class="fw-bold text-danger mb-2"><i class="fas fa-broom me-2"></i> End of School Year Cleanup</h6>
-                                    <p class="text-muted small mb-4">Running this protocol will archive all audit logs, clear current room assignments, and prepare the system for the next academic year. <strong class="text-danger">This action cannot be undone.</strong></p>
+                                    <p class="text-muted small mb-4">Running this protocol will archive all audit logs, clear current room assignments, wipe all registered passkeys & biometrics, and prepare the system for the next academic year. <strong class="text-danger">This action cannot be undone.</strong></p>
                                     <button type="button" class="btn bg-gradient-danger text-white rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#cleanupModal">
                                         Run Cleanup Protocol
                                     </button>
@@ -474,10 +475,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="text-muted small mb-0 fw-semibold">Are you sure you want to run the End of School Year Cleanup? This will format the database for the new semester.</p>
+                    <p class="text-muted small mb-0 fw-semibold">Are you sure you want to run the End of School Year Cleanup? This will clear all audit logs, room assignments, messages, and permanently wipe all registered passkeys and biometric records for the new semester.</p>
                 </div>
                 <div class="modal-footer border-0 p-4 pt-0 justify-content-center">
-                    <form action="/settings/cleanup" method="POST" class="w-100">
+                    <form action="{{ route('settings.cleanup') }}" method="POST" class="w-100">
                         @csrf
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-outline-secondary rounded-pill flex-grow-1 fw-bold shadow-sm" data-bs-dismiss="modal">Cancel</button>

@@ -1048,17 +1048,18 @@ class DashboardController extends Controller
             return response()->json(['success' => false, 'message' => 'This passkey is already registered to another account.']);
         }
 
-        // 2. Kapag naka-register na sa current user ang eksaktong credential na ito, skip lang
-        if ($existing && $existing->user_id === Auth::id()) {
-            return response()->json(['success' => true, 'message' => 'Device already registered.']); 
-        }
+        // 2. Linisin muna ang lumang passkey para sa device name na ito ng user para hindi mag-double
+        DB::table('passkeys')
+            ->where('user_id', Auth::id())
+            ->where('name', $request->name ?? 'Authorized Device')
+            ->delete();
 
-        // 3. 🟢 FIX: Gumamit ng INSERT imbes na DELETE para makapag-save ng multiple devices
+        // 3. I-save ang bagong passkey credential para sa device
         DB::table('passkeys')->insert([
             'user_id' => Auth::id(),
             'credential_id' => $request->credential_id,
             'credential' => 'native_webauthn_bypass', 
-            'name' => $request->name ?? 'My Authorized Device',
+            'name' => $request->name ?? 'Authorized Device',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -1730,23 +1731,24 @@ class DashboardController extends Controller
         try {
             Log::info('Deep System Cleanup initiated by Admin ID: ' . Auth::id());
 
-            DB::unprepared("SET FOREIGN_KEY_CHECKS = 0;");
+            DB::statement("SET FOREIGN_KEY_CHECKS = 0;");
             
-            DB::table('audit_logs')->truncate();
-            DB::table('backup_battery_logs')->truncate();
-            DB::table('conversations')->truncate();
-            DB::table('device_health_logs')->truncate();
-            DB::table('device_response_logs')->truncate();
-            DB::table('doorbell_events')->truncate();
-            DB::table('intrusion_alerts')->truncate();
-            DB::table('messages')->truncate();
-            DB::table('notifications')->truncate();
-            DB::table('room_assignments')->truncate();
-            DB::table('fingerprints')->truncate();
-            DB::table('passkeys')->truncate();
-            DB::table('sessions')->truncate();
+            DB::table('audit_logs')->delete();
+            DB::table('backup_battery_logs')->delete();
+            DB::table('conversations')->delete();
+            DB::table('device_health_logs')->delete();
+            DB::table('device_response_logs')->delete();
+            DB::table('doorbell_events')->delete();
+            DB::table('intrusion_alerts')->delete();
+            DB::table('messages')->delete();
+            DB::table('notifications')->delete();
+            DB::table('room_assignments')->delete();
+            DB::table('fingerprints')->delete();
+            DB::table('passkeys')->delete();
+            DB::table('push_subscriptions')->delete();
+            DB::table('sessions')->delete();
             
-            DB::unprepared("SET FOREIGN_KEY_CHECKS = 1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS = 1;");
 
             DB::table('audit_logs')->insert([
                 'room_id' => 1,
@@ -1755,11 +1757,11 @@ class DashboardController extends Controller
                 'method' => 'remote_pwa',
                 'door_state_after' => 'locked',
                 'ip_address' => $request->ip(),
-                'notes' => 'Deep system cleanup protocol executed successfully.',
+                'notes' => 'Deep system cleanup protocol executed successfully. All logs, passkeys, and room assignments cleared.',
                 'logged_at' => now()
             ]);
 
-            return back()->with('success', 'System Cleanup Successful! All logs, alerts, and messages have been cleared for a fresh start.');
+            return back()->with('success', 'System Cleanup Successful! All logs, alerts, passkeys, and room assignments have been cleared for a fresh start.');
         } catch (\Exception $e) {
             Log::error('System Cleanup Failed: ' . $e->getMessage());
             return back()->with('error', 'Cleanup protocol failed: ' . $e->getMessage());
