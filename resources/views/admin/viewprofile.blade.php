@@ -182,9 +182,15 @@
                 </div>
                 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('users.database') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold shadow-sm control-btn">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Users
-                    </a>
+                    @if(Auth::user()?->role === 'Admin')
+                        <a href="{{ route('users.database') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold shadow-sm control-btn">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Users
+                        </a>
+                    @else
+                        <a href="{{ url()->previous() ?: route('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold shadow-sm control-btn">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    @endif
                     <a href="{{ route('messages.index') }}?user={{ $viewUser->user_id }}" class="btn bg-gradient-primary text-white rounded-pill px-4 py-2 shadow-sm control-btn fw-bold">
                         <i class="fab fa-facebook-messenger me-2"></i> Send Message
                     </a>
