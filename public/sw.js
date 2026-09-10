@@ -65,7 +65,7 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Handle Notification Click (brings window to focus when clicked)
+// Handle Notification Click (brings window to focus and navigates directly to targetUrl)
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
@@ -74,8 +74,12 @@ self.addEventListener('notificationclick', (event) => {
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (let i = 0; i < clientList.length; i++) {
                 const client = clientList[i];
-                if (client.url.includes(targetUrl) && 'focus' in client) {
-                    return client.focus();
+                if ('focus' in client) {
+                    client.focus();
+                    if ('navigate' in client) {
+                        return client.navigate(targetUrl);
+                    }
+                    return;
                 }
             }
             if (clients.openWindow) {

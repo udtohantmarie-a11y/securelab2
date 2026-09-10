@@ -92,7 +92,7 @@
                             }
                         @endphp
                         <li style="position: relative; z-index: 1010;">
-                            <a class="dropdown-item py-2 border-bottom text-wrap single-notif-link" href="{{ $link }}" data-notif-id="{{ $notif->notif_id }}">
+                            <a class="dropdown-item py-2 border-bottom text-wrap single-notif-link" href="{{ $link }}" data-notif-id="{{ $notif->notif_id }}" data-title="{{ $notif->title }}" data-body="{{ $notif->body }}" data-type="{{ $notif->type }}">
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="mt-1 p-2 rounded-circle {{ $bgLight }} {{ $iconColor }}">
                                         <i class="fas {{ $icon }}"></i>
@@ -233,7 +233,7 @@
                             }
                         @endphp
                         <li style="position: relative; z-index: 1060;">
-                            <a class="dropdown-item px-3 py-2 border-bottom text-wrap single-notif-link" href="{{ $link }}" data-notif-id="{{ $notif->notif_id }}">
+                            <a class="dropdown-item px-3 py-2 border-bottom text-wrap single-notif-link" href="{{ $link }}" data-notif-id="{{ $notif->notif_id }}" data-title="{{ $notif->title }}" data-body="{{ $notif->body }}" data-type="{{ $notif->type }}">
                                 <div class="d-flex align-items-start gap-3">
                                     <div class="mt-1 p-2 rounded-circle {{ $bgLight }} {{ $iconColor }} flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px;">
                                         <i class="fas {{ $icon }}"></i>
@@ -447,7 +447,11 @@
                     try {
                         const n = new Notification(title, { body: body, icon: iconUrl });
                         if (targetUrl) {
-                            n.onclick = function() { window.focus(); window.location.href = targetUrl; };
+                            n.onclick = function(e) { 
+                                e.preventDefault();
+                                window.focus(); 
+                                window.location.href = targetUrl; 
+                            };
                         }
                     } catch(e) {}
                 });
@@ -455,7 +459,11 @@
                 try {
                     const n = new Notification(title, { body: body, icon: iconUrl });
                     if (targetUrl) {
-                        n.onclick = function() { window.focus(); window.location.href = targetUrl; };
+                        n.onclick = function(e) { 
+                            e.preventDefault();
+                            window.focus(); 
+                            window.location.href = targetUrl; 
+                        };
                     }
                 } catch(e) {}
             }
@@ -483,13 +491,67 @@
     }, { once: true });
 
     function triggerGlobalAlertModal(notif) {
+        if (!notif) return;
+        const titleText = notif.title || 'Security Alert';
+        const bodyText = notif.body || 'New alert from SecureLab IoT System.';
+
         if (notif.type === 'doorbell') {
             const doorbellModalEl = document.getElementById('doorbellLiveModal');
-            const doorbellModal = new bootstrap.Modal(doorbellModalEl);
-            
+            if (doorbellModalEl) {
+                const doorbellModal = new bootstrap.Modal(doorbellModalEl);
+                window.playNotificationSound();
+                
+                const dismissBtn = document.getElementById('dismissDoorbellBtn');
+                if (dismissBtn) {
+                    dismissBtn.onclick = function() {
+                        if (notif.notif_id) {
+                            fetch('{{ route("messages.read") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({ notif_id: notif.notif_id })
+                            });
+                        }
+                    };
+                }
+
+                doorbellModal.show();
+            }
+            return;
+        }
+
+        const modalEl = document.getElementById('globalUrgentModal');
+        if (!modalEl) return;
+        const modal = new bootstrap.Modal(modalEl);
+        
+        const iconDiv = document.getElementById('urgentModalIcon');
+        const titleEl = document.getElementById('urgentModalTitle');
+        const bodyEl = document.getElementById('urgentModalBody');
+        const ackBtn = document.getElementById('acknowledgeAlertBtn');
+        const viewBtn = document.getElementById('viewAlertDetailsBtn');
+
+        if (titleText.includes('Door Left Open')) {
+            if (iconDiv) iconDiv.innerHTML = '<i class="fas fa-door-open fa-4x text-warning fa-shake"></i>';
+            if (titleEl) titleEl.className = 'fw-bold mb-2 text-warning';
             window.playNotificationSound();
-            
-            document.getElementById('dismissDoorbellBtn').onclick = function() {
+        } else if (notif.type === 'intrusion_alert' || titleText.includes('Invalid') || titleText.includes('CRITICAL')) {
+            if (iconDiv) iconDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-4x text-danger fa-fade"></i>';
+            if (titleEl) titleEl.className = 'fw-bold mb-2 text-danger';
+            window.playAlarmSound();
+        } else {
+            if (iconDiv) iconDiv.innerHTML = '<i class="fas fa-shield-alt fa-4x text-primary"></i>';
+            if (titleEl) titleEl.className = 'fw-bold mb-2 text-primary';
+            window.playNotificationSound();
+        }
+
+        if (titleEl) titleEl.innerText = titleText;
+        if (bodyEl) bodyEl.innerText = bodyText;
+
+        let markAsRead = function() {
+            if (notif.notif_id) {
                 fetch('{{ route("messages.read") }}', {
                     method: 'POST',
                     headers: {
@@ -499,55 +561,46 @@
                     },
                     body: JSON.stringify({ notif_id: notif.notif_id })
                 });
-            };
-
-            doorbellModal.show();
-            return;
-        }
-
-        const modalEl = document.getElementById('globalUrgentModal');
-        const modal = new bootstrap.Modal(modalEl);
-        
-        const iconDiv = document.getElementById('urgentModalIcon');
-        const titleEl = document.getElementById('urgentModalTitle');
-        const bodyEl = document.getElementById('urgentModalBody');
-        const ackBtn = document.getElementById('acknowledgeAlertBtn');
-        const viewBtn = document.getElementById('viewAlertDetailsBtn');
-
-        if (notif.title.includes('Door Left Open')) {
-            iconDiv.innerHTML = '<i class="fas fa-door-open fa-4x text-warning fa-shake"></i>';
-            titleEl.className = 'fw-bold mb-2 text-warning';
-            window.playNotificationSound();
-        } else if (notif.type === 'intrusion_alert' || notif.title.includes('Invalid') || notif.title.includes('CRITICAL')) {
-            iconDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-4x text-danger fa-fade"></i>';
-            titleEl.className = 'fw-bold mb-2 text-danger';
-            window.playAlarmSound();
-        } else {
-            iconDiv.innerHTML = '<i class="fas fa-shield-alt fa-4x text-primary"></i>';
-            titleEl.className = 'fw-bold mb-2 text-primary';
-            window.playNotificationSound();
-        }
-
-        titleEl.innerText = notif.title;
-        bodyEl.innerText = notif.body;
-
-        let markAsRead = function() {
-            fetch('{{ route("messages.read") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({ notif_id: notif.notif_id })
-            });
+            }
         };
 
-        ackBtn.onclick = markAsRead;
-        viewBtn.onclick = markAsRead;
+        if (ackBtn) ackBtn.onclick = markAsRead;
+        if (viewBtn) viewBtn.onclick = markAsRead;
 
         modal.show();
     }
+
+    // 🟢 Auto-pop Alert Modal if redirected from a Notification click (e.g. ?popup_alert=1)
+    (function checkUrlAlertPopup() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('popup_alert') === '1') {
+            const notif = {
+                notif_id: params.get('notif_id') || '',
+                type: params.get('type') || 'warning',
+                title: params.get('title') || 'Security Alert',
+                body: params.get('body') || ''
+            };
+
+            const trigger = () => {
+                triggerGlobalAlertModal(notif);
+                // Clean query parameters from address bar without reloading
+                params.delete('popup_alert');
+                params.delete('title');
+                params.delete('body');
+                params.delete('type');
+                params.delete('notif_id');
+                const remaining = params.toString();
+                const newUrl = window.location.pathname + (remaining ? '?' + remaining : '');
+                window.history.replaceState({}, document.title, newUrl);
+            };
+
+            if (document.readyState === 'complete') {
+                setTimeout(trigger, 450);
+            } else {
+                window.addEventListener('load', () => setTimeout(trigger, 450));
+            }
+        }
+    })();
 
     document.addEventListener('click', function(e) {
         let notifLink = e.target.closest('.single-notif-link');
@@ -555,6 +608,14 @@
             e.preventDefault(); 
             let notifId = notifLink.getAttribute('data-notif-id');
             let targetUrl = notifLink.getAttribute('href');
+            let rawTitle = notifLink.getAttribute('data-title') || notifLink.querySelector('.fw-bold')?.innerText?.trim() || '';
+            let rawBody = notifLink.getAttribute('data-body') || notifLink.querySelector('.text-muted.d-block')?.innerText?.trim() || '';
+            let type = notifLink.getAttribute('data-type') || '';
+
+            let title = rawTitle;
+            let body = rawBody;
+            try { title = decodeURIComponent(rawTitle); } catch(err) {}
+            try { body = decodeURIComponent(rawBody); } catch(err) {}
 
             fetch('{{ route("messages.read") }}', {
                 method: 'POST',
@@ -564,11 +625,20 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ notif_id: notifId })
-            }).then(() => {
-                window.location.href = targetUrl; 
-            }).catch(() => {
-                window.location.href = targetUrl; 
             });
+
+            // If it's a doorbell or critical alert, pop up the alert modal on the screen right now!
+            const isUrgentAlert = (type === 'doorbell' || type === 'intrusion_alert' || title.includes('Door Left Open') || title.includes('CRITICAL') || title.includes('Invalid'));
+            if (isUrgentAlert) {
+                triggerGlobalAlertModal({
+                    notif_id: notifId,
+                    title: title,
+                    body: body,
+                    type: type
+                });
+            } else {
+                window.location.href = targetUrl;
+            }
         }
     });
 
@@ -687,10 +757,18 @@
                         window.playNotificationSound();
                         const topNotif = (data.recent_notifications && data.recent_notifications.length > 0) ? data.recent_notifications[0] : null;
                         if (topNotif) {
-                            let notifUrl = '{{ route("dashboard.alerts") }}';
+                            let baseNotifUrl = '{{ route("dashboard.alerts") }}';
                             if (topNotif.type === 'door_unlocked' || topNotif.type === 'door_locked') {
-                                notifUrl = '{{ route("audit.logs") }}';
+                                baseNotifUrl = '{{ route("audit.logs") }}';
                             }
+                            const alertParams = new URLSearchParams({
+                                popup_alert: '1',
+                                notif_id: topNotif.notif_id || '',
+                                type: topNotif.type || '',
+                                title: topNotif.title || '',
+                                body: topNotif.body || ''
+                            });
+                            const notifUrl = baseNotifUrl + '?' + alertParams.toString();
                             window.showSystemPopNotification('🔔 ' + (topNotif.title || 'Security Notification'), topNotif.body || 'New alert from SecureLab', notifUrl);
                         }
                     }
@@ -723,10 +801,18 @@
                             if (notif.is_read == 0 && (notif.type === 'doorbell' || notif.type === 'intrusion_alert') && parseInt(notif.notif_id) > lastGlobalAlertId) {
                                 localStorage.setItem('lastGlobalAlertId', notif.notif_id); 
                                 triggerGlobalAlertModal(notif);
+                                const alertParams = new URLSearchParams({
+                                    popup_alert: '1',
+                                    notif_id: notif.notif_id || '',
+                                    type: notif.type || '',
+                                    title: notif.title || '',
+                                    body: notif.body || ''
+                                });
+                                const notifUrl = '{{ route("dashboard.alerts") }}?' + alertParams.toString();
                                 window.showSystemPopNotification(
                                     (notif.type === 'doorbell' ? '🔔 Doorbell Alert' : '🚨 CRITICAL ALERT') + ': ' + notif.title,
                                     notif.body,
-                                    '{{ route("dashboard.alerts") }}'
+                                    notifUrl
                                 );
                             }
 
@@ -757,7 +843,7 @@
 
                             notifHtml += `
                             <li style="position: relative; z-index: 1060;">
-                                <a class="dropdown-item px-3 py-2 border-bottom text-wrap single-notif-link" href="${link}" data-notif-id="${notif.notif_id}">
+                                <a class="dropdown-item px-3 py-2 border-bottom text-wrap single-notif-link" href="${link}" data-notif-id="${notif.notif_id}" data-title="${encodeURIComponent(notif.title)}" data-body="${encodeURIComponent(notif.body)}" data-type="${notif.type}">
                                     <div class="d-flex align-items-start gap-3">
                                         <div class="mt-1 p-2 rounded-circle ${bgLight} ${iconColor} flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px;">
                                             <i class="fas ${icon}"></i>
