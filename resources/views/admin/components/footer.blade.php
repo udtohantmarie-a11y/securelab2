@@ -144,6 +144,30 @@
                 });
             });
         }
+
+        // 🟢 7. Global WAI-ARIA & Modal Focus Sanitizer (Chrome 122+ / Bootstrap 5 Fix)
+        // Fixes: "Blocked aria-hidden on an element because its descendant retained focus"
+        // Ensures that no focused element remains inside a modal when Bootstrap hides it and applies aria-hidden="true".
+        document.addEventListener('hide.bs.modal', function (event) {
+            if (document.activeElement && event.target && event.target.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        }, true);
+
+        // Preemptive blur on any dismiss button click before Bootstrap sets aria-hidden="true"
+        document.addEventListener('click', function (event) {
+            const dismissTrigger = event.target.closest('[data-bs-dismiss="modal"], .btn-close');
+            if (dismissTrigger) {
+                dismissTrigger.blur();
+            }
+        }, true);
+
+        // Extra fallback cleanup when modal is completely hidden
+        document.addEventListener('hidden.bs.modal', function (event) {
+            if (document.activeElement && event.target && event.target.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
     });
 </script>
 

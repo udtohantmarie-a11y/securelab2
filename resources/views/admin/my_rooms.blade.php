@@ -571,7 +571,7 @@
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
                 <div class="modal-header border-0 p-4 pb-0 mb-2">
                     <h5 class="modal-title fw-bold text-dark"><i class="fas fa-lightbulb text-warning me-2"></i>Welcome Guide & Setup Tips</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="this.blur()"></button>
                 </div>
                 <div class="modal-body p-4 pt-2">
                     <div class="alert alert-warning border-0 small py-2 px-3 mb-3 fw-semibold shadow-sm" style="border-radius: 12px;">
@@ -730,6 +730,9 @@
         });
 
         function closeTipsModal() {
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
             let checkbox = document.getElementById('dontShowAgainCheck');
             if (checkbox && checkbox.checked) {
                 localStorage.setItem('securelab_hide_setup_tips', 'true');
