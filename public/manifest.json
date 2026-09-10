@@ -1,0 +1,37 @@
+{
+"id": "/",
+    "name": "SecureLab Smart Lock",
+    "short_name": "SecureLab",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8fafc",
+    "theme_color": "#4f46e5",
+    "icons": [
+    {
+        "src": "icons/icon-192x192.png",
+        "sizes": "2048x2048",
+        "type": "image/png",
+        "purpose": "any"
+    },
+    {
+        "src": "icons/icon-192x192.png",
+        "sizes": "2048x2048",
+        "type": "image/png",
+        "purpose": "maskable"
+    }
+],
+    "screenshots": [
+        {
+            "src": "/screenshots/desktop.png",
+            "sizes": "1920x1080",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshots/mobile.jpg",
+            "sizes": "1080x2340",
+            "type": "image/jpeg",
+            "form_factor": "narrow"
+        }
+    ]
+}
