@@ -570,7 +570,8 @@
 
             <div class="card log-card-executive">
                 <div class="card-body p-0">
-                    <table id="auditLogsTable" class="table table-hover align-middle mb-0 w-100 dt-responsive nowrap">
+                    <div class="table-responsive">
+                        <table id="auditLogsTable" class="table table-hover align-middle mb-0 w-100 dt-responsive nowrap">
                         <thead>
                             <tr>
                                 <th class="ps-4 text-nowrap">Timestamp</th>
@@ -655,6 +656,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 

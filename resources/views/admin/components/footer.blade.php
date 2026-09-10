@@ -84,19 +84,34 @@
         }
 
         // 2. Mobile Toggle Logic (Hamburger Menu Slide-in)
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
         if (mobileToggle) {
             mobileToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (sidebar) sidebar.classList.toggle('active');
+                if (sidebar) {
+                    sidebar.classList.toggle('active');
+                    if (sidebarBackdrop) {
+                        sidebarBackdrop.classList.toggle('active', sidebar.classList.contains('active'));
+                    }
+                }
+            });
+        }
+
+        // Close sidebar when clicking backdrop
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', function() {
+                if (sidebar) sidebar.classList.remove('active');
+                sidebarBackdrop.classList.remove('active');
             });
         }
 
         // 3. Close sidebar when clicking outside (Para sa Mobile View)
         document.addEventListener('click', function(e) {
             if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
-                if (!sidebar.contains(e.target) && e.target !== mobileToggle) {
+                if (!sidebar.contains(e.target) && e.target !== mobileToggle && !mobileToggle?.contains(e.target)) {
                     sidebar.classList.remove('active');
+                    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
                 }
             }
         });
@@ -105,6 +120,7 @@
         window.addEventListener('resize', function() {
             if (window.innerWidth > 992 && sidebar) {
                 sidebar.classList.remove('active');
+                if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
             }
         });
 

@@ -156,6 +156,9 @@
     </div>
 </aside>
 
+<!-- Mobile Sidebar Backdrop Overlay -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
 <style>
     .sidebar-brand-header {
         background: rgba(255, 255, 255, 0.02);

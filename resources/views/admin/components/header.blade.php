@@ -433,23 +433,193 @@
         box-shadow: var(--shadow-xs);
     }
 
-    /* Responsive Breakpoint */
+    /* =========================================================
+       📱 ULTRA-RESPONSIVE MOBILE BREAKPOINTS & LAYOUT
+    ========================================================= */
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(10, 15, 29, 0.68);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 1040;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+    }
+    .sidebar-backdrop.active {
+        display: block !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
     @media (max-width: 992px) {
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+        }
+
         .sidebar {
-            margin-left: -270px;
+            margin-left: -280px;
+            width: 280px;
+            z-index: 1050;
+            box-shadow: none;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .sidebar.active {
-            margin-left: 0;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.4);
+            margin-left: 0 !important;
+            box-shadow: 10px 0 50px rgba(0, 0, 0, 0.5) !important;
         }
-        .main-content, footer {
-            margin-left: 0;
+
+        .main-content {
+            margin-left: 0 !important;
+            padding: 1rem 0.85rem 2rem !important;
+            max-width: 100vw !important;
+            overflow-x: hidden;
         }
+
+        footer {
+            margin-left: 0 !important;
+            padding: 1.25rem 0.85rem !important;
+        }
+
+        /* Full-Bleed Native Mobile Topbar */
         .mobile-header {
             display: flex !important;
+            margin: -1rem -0.85rem 1.25rem -0.85rem !important;
+            padding: 10px 16px !important;
+            border-radius: 0 !important;
+            width: calc(100% + 1.7rem) !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+            border-top: 0 !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1030 !important;
+            background: var(--bg-surface) !important;
         }
-        .main-content {
-            padding: 1.25rem 1rem;
+    }
+
+    @media (max-width: 768px) {
+        /* General Containers & Spacing */
+        .container-fluid {
+            padding-left: 0.2rem !important;
+            padding-right: 0.2rem !important;
+        }
+
+        /* Card and Panel Padding */
+        .card, .stat-card-modern, .threat-kpi-card, .access-kpi-card, .dashboard-card {
+            border-radius: 16px !important;
+            max-width: 100% !important;
+        }
+
+        /* Heading scales */
+        h3, .dashboard-header-title {
+            font-size: 1.35rem !important;
+            line-height: 1.25 !important;
+        }
+        h4 {
+            font-size: 1.18rem !important;
+            line-height: 1.25 !important;
+        }
+
+        /* DataTables Full Responsive Overrides */
+        .dataTables_wrapper {
+            width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        .dataTables_wrapper .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        .dataTables_wrapper [class*="col-"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_length {
+            text-align: left !important;
+            float: none !important;
+            margin-bottom: 0.6rem !important;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            display: block !important;
+            margin-top: 4px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            text-align: center !important;
+            float: none !important;
+            margin-top: 0.75rem !important;
+            display: flex !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 4px 10px !important;
+            font-size: 0.8rem !important;
+        }
+
+        /* Filter Toolbars */
+        .filter-toolbar {
+            padding: 0.85rem !important;
+            border-radius: 16px !important;
+        }
+        .filter-toolbar .d-flex {
+            gap: 0.6rem !important;
+        }
+        .filter-toolbar input[type="date"],
+        .filter-toolbar input[type="text"],
+        .filter-toolbar select {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        .filter-toolbar .btn,
+        .filter-toolbar #clearDateFilter {
+            width: 100% !important;
+            margin-left: 0 !important;
+            text-align: center !important;
+            justify-content: center !important;
+        }
+
+        /* Modals on Mobile */
+        .modal-dialog {
+            margin: 0.5rem auto !important;
+            max-width: 95vw !important;
+        }
+        .modal-content {
+            border-radius: 20px !important;
+        }
+
+        /* Cyber HUD Strip */
+        .cyber-hud-strip {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+        .cyber-hud-strip .gap-2 {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            width: 100% !important;
+            gap: 6px !important;
+        }
+        .cyber-hud-strip .gap-2 > div {
+            padding: 8px 6px !important;
+        }
+
+        /* Messenger & Chat Area on Mobile */
+        .inbox-card {
+            height: calc(100vh - 120px) !important;
+            border-radius: 16px !important;
         }
     }
 

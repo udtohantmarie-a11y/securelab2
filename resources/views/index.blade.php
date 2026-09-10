@@ -154,6 +154,14 @@
             .hero-title { font-size: 2.25rem; }
             .hero-section { padding: 40px 0 45px; }
         }
+        @media (max-width: 576px) {
+            .hero-title { font-size: 1.85rem !important; line-height: 1.25; }
+            .hero-section { padding: 25px 0 35px; }
+            .hero-badge-pill { font-size: 0.72rem; padding: 4px 12px; }
+            .section-heading { font-size: 1.7rem !important; }
+            .persona-card, .feature-card, .defense-layer-card { padding: 22px 18px !important; }
+            .modal-content { border-radius: 20px !important; }
+        }
 
         /* 🟢 LIVE HARDWARE SHOWCASE CARD */
         .preview-hardware-card {
@@ -576,9 +584,49 @@
             gap: 7px;
             margin-top: 14px;
         }
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
             .sim-btn-deck {
                 grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 576px) {
+            .sim-hud-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                padding: 12px 14px !important;
+            }
+            .sim-hud-header > div:last-child {
+                width: 100% !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+            .sim-stage {
+                padding: 14px 12px !important;
+            }
+            .sim-visual-core {
+                padding: 14px 12px !important;
+                gap: 12px !important;
+            }
+            .sim-avatar-orb {
+                width: 52px !important;
+                height: 52px !important;
+                font-size: 22px !important;
+            }
+            #simActionTitle {
+                font-size: 1rem !important;
+            }
+            .sim-btn-deck {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+            }
+            .sim-btn-deck .sim-btn-key:last-child {
+                grid-column: span 2 !important;
+            }
+            .sim-vitals-row {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
             }
         }
         .sim-btn-key {
@@ -630,7 +678,7 @@
             gap: 6px;
             margin-top: 14px;
         }
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
             .sim-vitals-row {
                 grid-template-columns: repeat(2, 1fr);
             }
