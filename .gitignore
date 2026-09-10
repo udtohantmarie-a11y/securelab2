@@ -15,4 +15,6 @@
 Thumbs.db
 Desktop.ini
 *.zip
+composer.json
+composer.lock
 
