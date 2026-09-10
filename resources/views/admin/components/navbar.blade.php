@@ -680,7 +680,7 @@
                         const topMsg = (data.recent_messages && data.recent_messages.length > 0) ? data.recent_messages[0] : null;
                         const sender = topMsg ? topMsg.contact_name : 'New Message';
                         const preview = topMsg ? (topMsg.preview_text || 'Sent you a message') : 'You received a new message';
-                        const msgUrl = topMsg ? ('{{ url("/messages?user=") }}' + topMsg.contact_id) : '{{ route("messages.inbox") }}';
+                        const msgUrl = topMsg ? ('{{ url("/messages?user=") }}' + topMsg.contact_id) : '{{ route("messages.index") }}';
                         window.showSystemPopNotification('💬 ' + sender, preview, msgUrl);
                     }
                     if (currentUnreadNotifs > lastKnownUnreadNotifs) {

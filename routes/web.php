@@ -82,6 +82,7 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
 
     // --- MESSAGES / INBOX ---
     Route::get('/messages', [DashboardController::class, 'inbox'])->name('messages.index');
+    Route::get('/messages/inbox', [DashboardController::class, 'inbox'])->name('messages.inbox');
     Route::post('/messages/send', [DashboardController::class, 'sendMessage'])->name('messages.send');
     Route::post('/messages/react/{id}', [DashboardController::class, 'reactMessage'])->name('messages.react');
     Route::post('/messages/delete/{id}', [DashboardController::class, 'deleteMessage'])->name('messages.delete');
