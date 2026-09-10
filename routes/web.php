@@ -90,6 +90,7 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
     Route::get('/messages/unread-count', [DashboardController::class, 'getUnreadCount'])->name('messages.unreadCount');
     Route::post('/messages/read', [DashboardController::class, 'markAsRead'])->name('messages.read');
     Route::post('/messages/read-status/{user}', [DashboardController::class, 'clearChatBadgesLocally'])->name('messages.readStatusLive');
+    Route::get('/messages/thread/{user}', [DashboardController::class, 'getConversationMessages'])->name('messages.thread');
 
     // --- AUTHORIZED ACCESS & REMOTE CONTROL ---
     Route::get('/my-assigned-rooms', [DashboardController::class, 'myRooms'])->name('rooms.my');

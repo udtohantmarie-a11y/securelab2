@@ -522,7 +522,7 @@
 
         const baseMsgUrl = '{{ route("messages.index") }}';
         let html = '';
-        recentMessages.forEach(msg => {
+        recentMessages.slice(0, 5).forEach(msg => {
             const msgUrl = `${baseMsgUrl}?user=${encodeURIComponent(msg.contact_id)}`;
             const safeName = escapeHtml(msg.contact_name);
             let preview = '';

@@ -211,7 +211,7 @@ class DashboardController extends Controller
 
         $unreadCount = (int) $inboxData->sum('unread_count');
 
-        $recentMessages = $inboxData->take(5)->map(function ($msg) {
+        $recentMessages = $inboxData->take(20)->map(function ($msg) {
             $lastMsg = (string) ($msg->last_message ?? '');
             $isImage = Str::startsWith($lastMsg, '[IMAGE]:');
             $isFile = Str::startsWith($lastMsg, '[FILE]:');
@@ -389,6 +389,110 @@ class DashboardController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function getConversationMessages(Request $request, $userId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'error' => 'Unauthenticated'], 401);
+        }
+
+        $myId = Auth::id();
+        $otherId = (int) $userId;
+        $afterId = (int) $request->query('after', 0);
+
+        $otherUser = DB::table('users')->where('user_id', $otherId)->first();
+        if (!$otherUser) {
+            return response()->json(['success' => false, 'error' => 'User not found'], 404);
+        }
+
+        $isOnline = !is_null($otherUser->last_seen) && \Carbon\Carbon::parse($otherUser->last_seen)->gt(now()->subMinutes(5));
+
+        $convo = DB::table('conversations')
+            ->where(function($q) use ($myId, $otherId) {
+                $q->where('participant_a', $myId)->where('participant_b', $otherId);
+            })->orWhere(function($q) use ($myId, $otherId) {
+                $q->where('participant_b', $myId)->where('participant_a', $otherId);
+            })->first();
+
+        if (!$convo) {
+            return response()->json([
+                'success' => true,
+                'messages' => [],
+                'read_status' => (object)[],
+                'is_online' => $isOnline
+            ]);
+        }
+
+        // Mark any unread messages from other user as read
+        DB::table('messages')
+            ->where('convo_id', $convo->convo_id)
+            ->where('sender_id', $otherId)
+            ->where('is_read', 0)
+            ->update(['is_read' => 1]);
+
+        DB::table('notifications')
+            ->where('user_id', $myId)
+            ->where('type', 'new_message')
+            ->where('is_read', 0)
+            ->update(['is_read' => 1, 'read_at' => now()]);
+
+        // Query messages
+        $query = DB::table('messages')->where('convo_id', $convo->convo_id);
+        if ($afterId > 0) {
+            $query->where('message_id', '>', $afterId);
+        }
+        $rawMsgs = $query->orderBy('sent_at', 'asc')->get();
+
+        $storageUrl = asset('storage') . '/';
+
+        $messages = $rawMsgs->map(function ($m) use ($storageUrl, $myId) {
+            $body = (string) $m->body;
+            $isImage = Str::startsWith($body, '[IMAGE]:');
+            $isFile = Str::startsWith($body, '[FILE]:');
+            $imgUrl = null;
+            $fileUrl = null;
+            $fileName = null;
+
+            if ($isImage) {
+                $imgUrl = $storageUrl . str_replace('[IMAGE]:', '', $body);
+            } elseif ($isFile) {
+                $fData = explode('|', str_replace('[FILE]:', '', $body));
+                $fileUrl = $storageUrl . ($fData[0] ?? '');
+                $fileName = $fData[1] ?? 'Attachment';
+            }
+
+            return [
+                'message_id' => $m->message_id,
+                'sender_id' => $m->sender_id,
+                'is_me' => ($m->sender_id == $myId),
+                'body' => $body,
+                'is_image' => $isImage,
+                'is_file' => $isFile,
+                'img_url' => $imgUrl,
+                'file_url' => $fileUrl,
+                'file_name' => $fileName,
+                'reaction' => $m->reaction,
+                'sent_at' => $m->sent_at,
+                'time_formatted' => \Carbon\Carbon::parse($m->sent_at)->format('h:i A'),
+                'is_read' => (int) $m->is_read
+            ];
+        })->values();
+
+        // Read status of recent sent messages in this convo
+        $readStatus = DB::table('messages')
+            ->where('convo_id', $convo->convo_id)
+            ->where('sender_id', $myId)
+            ->orderBy('message_id', 'desc')
+            ->limit(30)
+            ->pluck('is_read', 'message_id');
+
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+            'read_status' => $readStatus,
+            'is_online' => $isOnline
+        ]);
     }
 
     public function reactMessage(Request $request, $id)
@@ -1425,6 +1529,15 @@ class DashboardController extends Controller
                     ->where('is_read', 0)
                     ->update([
                         'is_read' => 1
+                    ]);
+
+                DB::table('notifications')
+                    ->where('user_id', $myId)
+                    ->where('type', 'new_message')
+                    ->where('is_read', 0)
+                    ->update([
+                        'is_read' => 1,
+                        'read_at' => now()
                     ]);
             }
 

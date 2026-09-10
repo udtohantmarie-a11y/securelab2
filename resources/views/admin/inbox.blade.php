@@ -390,7 +390,7 @@
                                         @endif
                                     </div>
                                 @empty
-                                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+                                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-4" id="emptyChatPlaceholder">
                                         <div class="stat-icon-wrapper mb-3" style="width: 70px; height: 70px; border-radius: 20px; background: rgba(37, 99, 235, 0.1); color: #2563eb; font-size: 28px;">
                                             <i class="far fa-comments"></i>
                                         </div>
@@ -554,9 +554,50 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. SCROLL TO BOTTOM LATEST CHAT
+            const activeUserId = '{{ request("user") ? (int)request("user") : "" }}';
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.toString().replace(/[&<>"']/g, m => map[m]);
+            }
+
+            // 1. SCROLL TO BOTTOM LATEST CHAT & EVENT DELEGATION
             const chatHistoryBox = document.getElementById('chatHistoryBox'); 
-            if(chatHistoryBox) chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
+            if(chatHistoryBox) {
+                chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
+
+                chatHistoryBox.addEventListener('click', function(e) {
+                    const reactBtn = e.target.closest('.reaction-trigger');
+                    if (reactBtn) {
+                        document.getElementById('reactMsgId').value = reactBtn.getAttribute('data-id');
+                        new bootstrap.Modal(document.getElementById('reactionModal')).show();
+                        return;
+                    }
+
+                    const deleteBtn = e.target.closest('.delete-trigger');
+                    if (deleteBtn) {
+                        document.getElementById('deleteMsgId').value = deleteBtn.getAttribute('data-id');
+                        new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+                        return;
+                    }
+
+                    const img = e.target.closest('.chat-img-clickable');
+                    if (img) {
+                        const url = img.getAttribute('data-url');
+                        document.getElementById('fullViewImage').src = url;
+                        document.getElementById('downloadImgBtn').href = url;
+                        new bootstrap.Modal(document.getElementById('imageViewerModal')).show();
+                        return;
+                    }
+                });
+            }
 
             // 2. SEARCH CONTACTS
             document.getElementById('contactSearchInput')?.addEventListener('keyup', function() {
@@ -570,29 +611,195 @@
                 });
             });
 
-            // 3. OPTIMIZED CHAT POLLING
-            let pollingTimer = null;
-            let pollController = null;
+            // 3. REALTIME SIDEBAR CONTACTS & ACTIVE CHAT POLLING
+            function updateSidebarContacts(recentMessages) {
+                if (!recentMessages || !recentMessages.length) return;
+                const contactsContainer = document.getElementById('contactsContainer');
 
-            function startPolling() {
-                pollController = new AbortController();
-                fetch('/messages/unread-count', { 
-                    signal: pollController.signal,
+                recentMessages.forEach(msg => {
+                    const contactEl = document.getElementById('contact-sidebar-' + msg.contact_id);
+                    if (contactEl) {
+                        const lastMsgEl = contactEl.querySelector('.sidebar-last-msg-text');
+                        if (lastMsgEl) {
+                            let preview = msg.last_message || 'Start a chat';
+                            if (msg.is_image) preview = 'Sent a photo';
+                            else if (msg.is_file) preview = 'Sent a file';
+                            else if (msg.preview_text) preview = msg.preview_text;
+                            lastMsgEl.innerText = preview;
+                        }
+
+                        const titleRow = contactEl.querySelector('.d-flex.justify-content-between.align-items-center');
+                        let badgeEl = document.getElementById('badge-' + msg.contact_id);
+
+                        if (activeUserId && activeUserId == msg.contact_id) {
+                            if (badgeEl) badgeEl.remove();
+                        } else if (msg.unread_count > 0) {
+                            if (!badgeEl && titleRow) {
+                                badgeEl = document.createElement('span');
+                                badgeEl.className = 'badge bg-danger rounded-pill';
+                                badgeEl.id = 'badge-' + msg.contact_id;
+                                titleRow.appendChild(badgeEl);
+                            }
+                            if (badgeEl) {
+                                badgeEl.innerText = msg.unread_count;
+                            }
+                        } else {
+                            if (badgeEl) badgeEl.remove();
+                        }
+
+                        if (contactsContainer && contactEl.previousElementSibling) {
+                            contactsContainer.prepend(contactEl);
+                        }
+                    }
+                });
+            }
+
+            function getLastMsgId() {
+                const msgRows = document.querySelectorAll('#chatHistoryBox .msg-row');
+                let maxId = 0;
+                msgRows.forEach(row => {
+                    const id = parseInt(row.id.replace('msg-', '')) || 0;
+                    if (id > maxId) maxId = id;
+                });
+                return maxId;
+            }
+
+            let isThreadPolling = false;
+            function pollActiveThread() {
+                if (!activeUserId || isThreadPolling) return;
+                isThreadPolling = true;
+                const afterId = getLastMsgId();
+
+                fetch(`/messages/thread/${activeUserId}?after=${afterId}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(r => r.json())
                 .then(data => {
-                    // Update badge UI manually here if needed
+                    if (!data.success) return;
+
+                    const chatBox = document.getElementById('chatHistoryBox');
+                    if (!chatBox) return;
+
+                    if (data.is_online !== undefined) {
+                        const statusDot = document.querySelector('.chat-header-info .status-dot');
+                        const statusText = document.querySelector('.chat-header-info small');
+                        if (statusDot) {
+                            statusDot.className = 'status-dot ' + (data.is_online ? 'status-online' : 'status-offline');
+                        }
+                        if (statusText) {
+                            statusText.className = (data.is_online ? 'text-success' : 'text-muted');
+                            statusText.innerHTML = `<i class="fas fa-circle me-1" style="font-size: 6px;"></i>${data.is_online ? 'Active Now' : 'Offline'}`;
+                        }
+                    }
+
+                    if (data.messages && data.messages.length > 0) {
+                        const emptyPlaceholder = document.getElementById('emptyChatPlaceholder');
+                        if (emptyPlaceholder) emptyPlaceholder.remove();
+
+                        let shouldScroll = false;
+                        const isNearBottom = (chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight) < 180;
+
+                        data.messages.forEach(m => {
+                            if (document.getElementById('msg-' + m.message_id)) return;
+
+                            let bodyHtml = '';
+                            if (m.is_image && m.img_url) {
+                                bodyHtml = `<img src="${m.img_url}" class="chat-img-clickable shadow-sm" data-url="${m.img_url}" alt="Chat Attachment">`;
+                            } else if (m.is_file && m.file_url) {
+                                bodyHtml = `
+                                    <div class="p-1 text-center">
+                                        <i class="fas fa-file-alt fa-2x mb-2 text-primary"></i><br>
+                                        <small class="d-block mb-2 text-truncate fw-semibold" style="max-width: 180px; margin: 0 auto; color: var(--text-main);">${escapeHtml(m.file_name || 'Attachment')}</small>
+                                        <a href="${m.file_url}" download class="btn btn-sm w-100 rounded-pill shadow-sm fw-semibold" style="background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-main);">
+                                            <i class="fas fa-download me-1 text-primary"></i> Download
+                                        </a>
+                                    </div>`;
+                            } else {
+                                bodyHtml = escapeHtml(m.body);
+                            }
+
+                            const reactionBadge = m.reaction ? `<div class="reaction-badge">${escapeHtml(m.reaction)}</div>` : '';
+                            const rowClass = m.is_me ? 'sent' : 'received';
+                            const deleteBtn = m.is_me ? `<i class="far fa-trash-alt action-btn delete-btn delete-trigger" data-id="${m.message_id}"></i>` : '';
+
+                            const rowDiv = document.createElement('div');
+                            rowDiv.className = `msg-row ${rowClass}`;
+                            rowDiv.id = `msg-${m.message_id}`;
+                            rowDiv.innerHTML = `
+                                <div class="msg-bubble">
+                                    ${bodyHtml}
+                                    ${reactionBadge}
+                                </div>
+                                <div class="msg-actions">
+                                    <i class="far fa-smile action-btn reaction-trigger" data-id="${m.message_id}"></i>
+                                    ${deleteBtn}
+                                </div>
+                            `;
+
+                            const infoDiv = document.createElement('div');
+                            infoDiv.className = `msg-info-row ${rowClass}`;
+                            infoDiv.id = `info-${m.message_id}`;
+                            infoDiv.innerHTML = `
+                                <span class="msg-time">${m.time_formatted}</span>
+                                ${m.is_me ? `<span class="msg-status ${m.is_read ? 'text-primary' : 'text-muted'}">${m.is_read ? 'Read' : 'Sent'}</span>` : ''}
+                            `;
+
+                            chatBox.appendChild(rowDiv);
+                            chatBox.appendChild(infoDiv);
+                            shouldScroll = true;
+                        });
+
+                        if (shouldScroll && isNearBottom) {
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        }
+
+                        const activeBadge = document.getElementById('badge-' + activeUserId);
+                        if (activeBadge) activeBadge.remove();
+                    }
+
+                    if (data.read_status) {
+                        Object.keys(data.read_status).forEach(msgId => {
+                            if (data.read_status[msgId] == 1) {
+                                const statusEl = document.querySelector(`#info-${msgId} .msg-status`);
+                                if (statusEl && statusEl.innerText.trim() === 'Sent') {
+                                    statusEl.innerText = 'Read';
+                                    statusEl.classList.remove('text-muted');
+                                    statusEl.classList.add('text-primary');
+                                }
+                            }
+                        });
+                    }
                 })
-                .catch(err => {
-                    if (err.name !== 'AbortError') console.log('Polling Error:', err);
-                })
+                .catch(err => console.error('Thread polling error:', err))
                 .finally(() => {
-                    pollingTimer = setTimeout(startPolling, 10000); 
+                    isThreadPolling = false;
                 });
             }
 
-            pollingTimer = setTimeout(startPolling, 10000); 
+            let isUnreadPolling = false;
+            function pollInboxSidebar() {
+                if (isUnreadPolling) return;
+                isUnreadPolling = true;
+
+                fetch('/messages/unread-count', { 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if(data.success && data.recent_messages) {
+                        updateSidebarContacts(data.recent_messages);
+                    }
+                })
+                .catch(err => console.error('Sidebar polling error:', err))
+                .finally(() => {
+                    isUnreadPolling = false;
+                });
+            }
+
+            if (activeUserId) {
+                setInterval(pollActiveThread, 3000);
+            }
+            setInterval(pollInboxSidebar, 4000); 
 
             // 4. ATTACHMENT & PREVIEW LOGIC
             const chatForm = document.getElementById('secureLabInboxChatForm');
@@ -711,14 +918,6 @@
                 });
             }
 
-            // REACTION MODAL TRIGGER
-            document.querySelectorAll('.reaction-trigger').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.getElementById('reactMsgId').value = this.getAttribute('data-id');
-                    new bootstrap.Modal(document.getElementById('reactionModal')).show();
-                });
-            });
-
             // HANDLE REACTION CLICK
             document.querySelectorAll('.emoji-option').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -744,14 +943,6 @@
                         }
                     })
                     .catch(err => console.error(err));
-                });
-            });
-
-            // DELETE MODAL TRIGGER
-            document.querySelectorAll('.delete-trigger').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.getElementById('deleteMsgId').value = this.getAttribute('data-id');
-                    new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
                 });
             });
 
@@ -786,16 +977,6 @@
                 .finally(() => {
                     btn.disabled = false;
                     btn.innerText = 'Delete';
-                });
-            });
-
-            // IMAGE VIEWER MODAL
-            document.querySelectorAll('.chat-img-clickable').forEach(img => {
-                img.addEventListener('click', function() {
-                    const url = this.getAttribute('data-url');
-                    document.getElementById('fullViewImage').src = url;
-                    document.getElementById('downloadImgBtn').href = url;
-                    new bootstrap.Modal(document.getElementById('imageViewerModal')).show();
                 });
             });
         });
