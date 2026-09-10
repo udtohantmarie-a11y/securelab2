@@ -123,6 +123,7 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
     
     // USER DATABASE ROUTES
     Route::get('/user-database', [DashboardController::class, 'userDatabase'])->name('users.database');
+    Route::get('/users', [DashboardController::class, 'userDatabase'])->name('users.index');
     Route::post('/user-database/store', [DashboardController::class, 'storeUser'])->name('users.store'); 
     Route::post('/user-database/update', [DashboardController::class, 'updateUser'])->name('users.update');
     Route::delete('/user-database/delete', [DashboardController::class, 'deleteUser'])->name('users.delete');

@@ -182,7 +182,7 @@
                 </div>
                 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold shadow-sm control-btn">
+                    <a href="{{ route('users.database') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold shadow-sm control-btn">
                         <i class="fas fa-arrow-left me-1"></i> Back to Users
                     </a>
                     <a href="{{ route('messages.index') }}?user={{ $viewUser->user_id }}" class="btn bg-gradient-primary text-white rounded-pill px-4 py-2 shadow-sm control-btn fw-bold">
