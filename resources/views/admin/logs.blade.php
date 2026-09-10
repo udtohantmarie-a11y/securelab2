@@ -15,6 +15,20 @@
         /* ====================================================
            SCREEN VIEW STYLES (Modern, Executive, SaaS Standard)
            ==================================================== */
+        .access-kpi-card {
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .access-kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+        }
+
         .log-card-executive {
             border-radius: 22px;
             border: 1px solid var(--border-color);
@@ -444,6 +458,13 @@
             {{-- 🟢 RESPONSIVE FIX: flex-column sa mobile, flex-row sa desktop --}}
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-fingerprint me-1"></i> ACCESS INTELLIGENCE & AUDIT
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Live Audit Log</span>
+                    </div>
                     <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">
                         Authorized Access Logs 
                         <span id="syncing-indicator" class="ms-2 badge rounded-pill fw-bold" style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);" onclick="window.location.reload();">
@@ -463,11 +484,72 @@
                 @endif
             </div>
 
+            <!-- 🟢 ACCESS INTELLIGENCE SUMMARY STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="access-kpi-card p-3 h-100" style="border-top: 3.5px solid #2563eb;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Total Events</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(37, 99, 235, 0.12); font-size: 13px;">
+                                <i class="fas fa-history"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $logs->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">All logged check-ins</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="access-kpi-card p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Biometric Scans</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-fingerprint"></i>
+                            </div>
+                        </div>
+                        @php
+                            $bioCount = $logs->filter(fn($l) => in_array(strtolower($l->method ?? ''), ['fingerprint', 'biometric']))->count();
+                        @endphp
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ $bioCount }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">500 DPI optical scans</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="access-kpi-card p-3 h-100" style="border-top: 3.5px solid #8b5cf6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Digital & Remote</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-key"></i>
+                            </div>
+                        </div>
+                        @php
+                            $remoteCount = $logs->filter(fn($l) => in_array(strtolower($l->method ?? ''), ['remote_pwa', 'passkey', 'webauthn', 'remote']))->count();
+                        @endphp
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $remoteCount }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">PWA & WebAuthn</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="access-kpi-card p-3 h-100" style="border-top: 3.5px solid #f59e0b;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Authorized Users</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-warning" style="width: 34px; height: 34px; background: rgba(245, 158, 11, 0.12); font-size: 13px;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        @php
+                            $uniqueUsersCount = $logs->pluck('user_name')->unique()->filter(fn($n) => !in_array($n, ['Unknown', 'System']))->count();
+                        @endphp
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $uniqueUsersCount }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Faculty & students active</small>
+                    </div>
+                </div>
+            </div>
+
             {{-- Date Filter Section --}}
-            <div class="filter-toolbar mb-4 date-filter-section">
+            <div class="filter-toolbar mb-4 date-filter-section shadow-sm">
                 <div class="d-flex flex-wrap align-items-center gap-3">
-                    <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
-                        <i class="fas fa-filter me-1"></i> Quick Filter
+                    <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: rgba(37, 99, 235, 0.1); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.25);">
+                        <i class="fas fa-filter me-1"></i> Access Audit Range
                     </span>
                     
                     <div class="d-flex align-items-center gap-2">
@@ -480,7 +562,7 @@
                         <input type="date" id="maxDate" class="form-control form-control-sm rounded-pill px-3" style="max-width: 150px; background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-main);">
                     </div>
                     
-                    <button id="clearDateFilter" class="btn btn-sm rounded-pill px-3 fw-semibold ms-auto" style="background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <button id="clearDateFilter" class="btn btn-sm rounded-pill px-3 fw-semibold ms-auto" style="background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-muted); transition: all 0.2s ease;">
                         <i class="fas fa-history me-1"></i> Reset Range
                     </button>
                 </div>
