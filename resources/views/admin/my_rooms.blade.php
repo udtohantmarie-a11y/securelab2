@@ -5,6 +5,20 @@
     <title>SecureLab - My Authorized Rooms</title>
     <style>
         /* 🟢 MY ROOMS STYLES */
+        .room-kpi-card {
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .room-kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+        }
+
         .room-control-card {
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-color);
@@ -123,6 +137,13 @@
         <div class="container-fluid p-0">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-door-open me-1"></i> CYBER-PHYSICAL LABORATORY LOCKS
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Authorized Node Control</span>
+                    </div>
                     <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">My Authorized Rooms</h4>
                     <p class="text-muted small mb-0 mt-1">Manage assigned laboratory locks, remote unlock triggers, PIN codes, and biometrics.</p>
                 </div>
@@ -137,6 +158,58 @@
                 </div>
             </div>
 
+            <!-- 🟢 ROOM SECURITY OVERVIEW STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="room-kpi-card p-3 h-100" style="border-top: 3.5px solid #1d4ed8;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Authorized Hubs</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(29, 78, 216, 0.12); font-size: 13px;">
+                                <i class="fas fa-door-closed"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $myRooms->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Assigned rooms</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-kpi-card p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-success text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Secured & Armed</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ $myRooms->where('door_state', 'locked')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Solenoid deadbolt engaged</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-kpi-card p-3 h-100" style="border-top: 3.5px solid #f59e0b;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-warning text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Active Access</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-warning" style="width: 34px; height: 34px; background: rgba(245, 158, 11, 0.12); font-size: 13px;">
+                                <i class="fas fa-unlock"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-warning" style="letter-spacing: -0.5px;">{{ $myRooms->where('door_state', 'unlocked')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Currently unlocked</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="room-kpi-card p-3 h-100" style="border-top: 3.5px solid #00d2ff;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Biometric Slots</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-info" style="width: 34px; height: 34px; background: rgba(0, 210, 255, 0.12); font-size: 13px;">
+                                <i class="fas fa-fingerprint"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $myRooms->filter(fn($r) => !empty($r->fingerprint))->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Enrolled fingerprints</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- AJAX Refresh Container -->
             <div class="row g-3 g-md-4" id="rooms-container">
                 @forelse($myRooms as $room)
@@ -144,9 +217,11 @@
                         $hardwareOnline = $room->is_active && $room->room_is_active;
                         $isReadOnly = $room->access_level === 'readonly';
                         $canOperate = $room->access_verified && $hardwareOnline && !$isReadOnly;
+                        $doorState = strtolower($room->door_state ?? 'locked');
+                        $cardTopBorder = !$hardwareOnline ? '#ef4444' : ($doorState === 'locked' ? '#10b981' : '#f59e0b');
                     @endphp
                     <div class="col-12 col-md-6 col-xl-4">
-                        <div class="room-control-card h-100 p-3 p-md-4">
+                        <div class="room-control-card h-100 p-3 p-md-4" style="border-top: 3.5px solid {{ $cardTopBorder }};">
                             <i class="fas fa-door-open watermark-icon"></i>
                             
                             <div class="d-flex justify-content-between align-items-start mb-4">
