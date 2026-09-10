@@ -1060,7 +1060,9 @@ class DashboardController extends Controller
 
     public function manageRooms()
     {
-        if (Auth::user()->role !== 'Admin') { abort(403); }
+        if (Auth::user()->role !== 'Admin') {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access. Only System Administrators can access Manage Rooms.');
+        }
         $navData = $this->getNavbarData();
         $rooms = DB::table('rooms')->get();
         return view('admin.manage_rooms', array_merge($navData, ['rooms' => $rooms]));
@@ -1130,7 +1132,9 @@ class DashboardController extends Controller
 
     public function assignUsers()
     {
-        if (Auth::user()->role !== 'Admin') { abort(403); }
+        if (Auth::user()->role !== 'Admin') {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access. Only System Administrators can access Assign Users.');
+        }
         $navData = $this->getNavbarData();
         
         $assignments = DB::table('room_assignments as ra')
@@ -1233,7 +1237,9 @@ class DashboardController extends Controller
 
     public function userDatabase()
     {
-        if (Auth::user()->role !== 'Admin') { abort(403); }
+        if (Auth::user()->role !== 'Admin') {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access. Only System Administrators can access the User Database.');
+        }
         $navData = $this->getNavbarData();
         $users = DB::table('users')->get();
         return view('admin.users_list', array_merge($navData, ['users' => $users]));
@@ -1242,7 +1248,9 @@ class DashboardController extends Controller
     // 🟢 NEW: PENDING USERS METHOD
     public function pendingUsers()
     {
-        if (Auth::user()->role !== 'Admin') { abort(403); }
+        if (Auth::user()->role !== 'Admin') {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access. Only System Administrators can access Pending Accounts.');
+        }
         $navData = $this->getNavbarData();
         
         // Fetch users where is_active is 0
@@ -1310,7 +1318,9 @@ class DashboardController extends Controller
 
     public function deviceManagement()
     {
-        if (Auth::user()->role !== 'Admin') { abort(403); }
+        if (Auth::user()->role !== 'Admin') {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access. Only System Administrators can access IoT Devices.');
+        }
         $navData = $this->getNavbarData();
         $devices = $this->getDeviceHealthLatestQuery()->get();
         return view('admin.devices', array_merge($navData, ['devices' => $devices]));

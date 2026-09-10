@@ -30,6 +30,15 @@ Route::get('/clear-cache', function () {
     return 'Laravel Cache Cleared Successfully!';
 });
 
+// ROUTE TO PROMOTE LOGGED IN USER TO ADMIN
+Route::get('/make-me-admin', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Please log in first.');
+    }
+    DB::table('users')->where('user_id', Auth::id())->update(['role' => 'Admin']);
+    return 'Success! Your account (' . Auth::user()->email . ') is now an ADMIN. <a href="/dashboard">Click here to go to Dashboard</a>';
+});
+
 // 1. Landing Page (Public Access)
 Route::get('/', function () {
     if (Auth::check()) {
