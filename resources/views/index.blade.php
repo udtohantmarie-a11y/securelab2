@@ -958,7 +958,7 @@
                             <button class="btn btn-portal-secondary px-4 py-3" data-bs-toggle="modal" data-bs-target="#registerModal">
                                 <i class="fas fa-user-plus me-2"></i>Request Personnel Access
                             </button>
-                            <button id="installApp" class="btn btn-outline-success rounded-pill px-4 py-3 d-none fw-bold shadow-sm">
+                            <button id="installApp" class="btn btn-outline-success rounded-pill px-4 py-3 fw-bold shadow-sm">
                                 <i class="fas fa-mobile-alt me-2"></i>Install PWA App
                             </button>
                         </div>
@@ -1672,6 +1672,64 @@
         </div>
     </div>
 
+    <!-- 🟢 PWA INSTALLATION GUIDE MODAL -->
+    <div class="modal fade" id="pwaGuideModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-2 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                            <i class="fas fa-mobile-screen-button fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-dark mb-0">Install SecureLab App</h5>
+                            <small class="text-muted">Progressive Web Application (PWA)</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+                    <p class="text-muted small mb-3">Install SecureLab directly onto your smartphone or computer for instant access, standalone fullscreen mode, and offline capability—no App Store download required!</p>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 rounded-3 bg-light border">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fab fa-android text-success fs-5"></i>
+                                <span class="fw-bold small text-dark">Android (Google Chrome)</span>
+                            </div>
+                            <div class="small text-muted ps-4">
+                                Tap the <strong>three dots (⋮)</strong> in the top-right corner, then tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3 bg-light border">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fab fa-apple text-dark fs-5"></i>
+                                <span class="fw-bold small text-dark">iPhone / iPad (Safari)</span>
+                            </div>
+                            <div class="small text-muted ps-4">
+                                Tap the <strong>Share button</strong> (<i class="fas fa-arrow-up-from-bracket"></i> at the bottom), scroll down, and tap <strong>"Add to Home Screen"</strong>.
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3 bg-light border">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fas fa-laptop text-primary fs-5"></i>
+                                <span class="fw-bold small text-dark">PC / Mac (Chrome or Edge)</span>
+                            </div>
+                            <div class="small text-muted ps-4">
+                                Click the <strong>Install icon (<i class="fas fa-download"></i>)</strong> on the right side of the address bar, or click Menu (⋮) &gt; <strong>"Install SecureLab"</strong>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-primary rounded-pill w-100 fw-bold py-2" data-bs-dismiss="modal">Got it, thank you!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -1683,6 +1741,7 @@
             }
         });
 
+        // 🟢 PWA Installation Handler
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             try {
@@ -1697,14 +1756,28 @@
 
         const installBtnElement = document.getElementById('installApp');
         if (installBtnElement) {
+            // Check if already launched in standalone PWA mode
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                installBtnElement.innerHTML = '<i class="fas fa-check-circle me-2"></i>PWA Installed';
+                installBtnElement.classList.replace('btn-outline-success', 'btn-success');
+            }
+
             installBtnElement.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     try {
                         await deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            installBtnElement.innerHTML = '<i class="fas fa-check-circle me-2"></i>PWA Installed';
+                            installBtnElement.classList.replace('btn-outline-success', 'btn-success');
+                        }
                         deferredPrompt = null;
                     } catch (err) {
                         console.error('PWA script launch execution cancelled:', err);
                     }
+                } else {
+                    const pwaModal = new bootstrap.Modal(document.getElementById('pwaGuideModal'));
+                    pwaModal.show();
                 }
             });
         }
