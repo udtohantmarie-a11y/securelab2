@@ -17,7 +17,7 @@
         <div class="dropdown">
             <div class="icon-btn cursor-pointer" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Messages">
                 <i class="fas fa-comment-dots text-primary small"></i>
-                <span class="icon-badge msg-count-badge" style="display: {{ ($totalUnreadMessages ?? 0) > 0 ? 'flex' : 'none' }}">{{ $totalUnreadMessages ?? 0 }}</span>
+                <span class="icon-badge bg-danger msg-count-badge" style="display: {{ ($totalUnreadMessages ?? 0) > 0 ? 'flex' : 'none' }}">{{ $totalUnreadMessages ?? 0 }}</span>
             </div>
             <ul class="dropdown-menu dropdown-menu-end shadow-lg p-0 border-0 dropdown-responsive">
                 <li class="p-2 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
@@ -492,8 +492,72 @@
         });
     });
 
-    // 5-second Silent Polling for Unread Messages and Alerts
-    setInterval(() => {
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function renderMessagesDropdown(recentMessages) {
+        const containers = document.querySelectorAll('.message-dropdown-container');
+        if (!containers.length) return;
+
+        if (!recentMessages || recentMessages.length === 0) {
+            const emptyHtml = `
+                <li class="p-4 text-center small text-muted no-messages-placeholder">
+                    <i class="fas fa-comment-slash text-muted opacity-50 fa-2x mb-2 d-block"></i>
+                    No recent conversations
+                </li>`;
+            containers.forEach(container => {
+                container.innerHTML = emptyHtml;
+            });
+            return;
+        }
+
+        const baseMsgUrl = '{{ route("messages.index") }}';
+        let html = '';
+        recentMessages.forEach(msg => {
+            const msgUrl = `${baseMsgUrl}?user=${encodeURIComponent(msg.contact_id)}`;
+            const safeName = escapeHtml(msg.contact_name);
+            let preview = '';
+            if (msg.is_image) {
+                preview = '<i class="fas fa-image me-1"></i>Sent a photo';
+            } else if (msg.is_file) {
+                preview = '<i class="fas fa-paperclip me-1"></i>Sent a file';
+            } else {
+                preview = escapeHtml(msg.preview_text || msg.last_message || '');
+            }
+
+            const unreadBadge = (msg.unread_count && msg.unread_count > 0)
+                ? '<span class="badge bg-success x-small-badge">New</span>'
+                : '';
+
+            html += `
+                <li style="position: relative; z-index: 1060;" data-contact-id="${msg.contact_id}" data-unread="${msg.unread_count}">
+                    <a class="dropdown-item px-3 py-2 border-bottom text-wrap" href="${msgUrl}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark d-block text-truncate" style="max-width: 190px; font-size: 12px;">${safeName}</span>
+                            ${unreadBadge}
+                        </div>
+                        <span class="text-muted text-truncate d-block" style="font-size: 11px;">
+                            ${preview}
+                        </span>
+                    </a>
+                </li>`;
+        });
+
+        containers.forEach(container => {
+            container.innerHTML = html;
+        });
+    }
+
+    function pollNavbarData() {
         fetch('{{ route("messages.unreadCount") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(response => response.json())
         .then(data => {
@@ -507,6 +571,10 @@
                     badge.innerText = data.unread_notifs_count;
                     badge.style.display = data.unread_notifs_count > 0 ? 'flex' : 'none';
                 });
+
+                if(data.recent_messages) {
+                    renderMessagesDropdown(data.recent_messages);
+                }
 
                 if(data.recent_notifications) {
                     let notifHtml = '';
@@ -574,5 +642,15 @@
             }
         })
         .catch(err => console.error('Silent polling error:', err));
-    }, 5000);
+    }
+
+    // 5-second Silent Polling for Unread Messages and Alerts
+    setInterval(pollNavbarData, 5000);
+
+    // Instant fetch when user clicks on Messages or Notifications icons
+    document.querySelectorAll('[title="Messages"], [title="Notifications"]').forEach(el => {
+        el.addEventListener('click', function() {
+            pollNavbarData();
+        });
+    });
 </script>

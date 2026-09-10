@@ -20,35 +20,37 @@ class DashboardController extends Controller
 
     private function getInboxQuery($userId)
     {
+        $userId = (int) $userId;
+
         $queryA = DB::table('conversations as c')
-            ->join('users as ub', 'ub.user_id', '=', 'c.participant_b')
+            ->leftJoin('users as ub', 'ub.user_id', '=', 'c.participant_b')
             ->where('c.participant_a', $userId)
             ->where('c.deleted_by_a', 0) 
             ->select(
                 'c.convo_id',
                 'c.participant_a as my_user_id',
                 'c.participant_b as contact_id',
-                'ub.full_name as contact_name',
-                'ub.role as contact_role'
+                DB::raw("COALESCE(ub.full_name, 'Unknown User') as contact_name"),
+                DB::raw("COALESCE(ub.role, 'User') as contact_role")
             )
-            ->selectRaw('(SELECT body FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC LIMIT 1) as last_message')
-            ->selectRaw('(SELECT sent_at FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC LIMIT 1) as last_message_at')
-            ->selectRaw('(SELECT COUNT(*) FROM messages WHERE messages.convo_id = c.convo_id AND is_read = 0 AND sender_id = c.participant_b) as unread_count');
+            ->selectRaw('(SELECT body FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC, message_id DESC LIMIT 1) as last_message')
+            ->selectRaw('(SELECT sent_at FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC, message_id DESC LIMIT 1) as last_message_at')
+            ->selectRaw('(SELECT COUNT(*) FROM messages WHERE messages.convo_id = c.convo_id AND is_read = 0 AND sender_id != ' . $userId . ') as unread_count');
 
         $queryB = DB::table('conversations as c')
-            ->join('users as ua', 'ua.user_id', '=', 'c.participant_a')
+            ->leftJoin('users as ua', 'ua.user_id', '=', 'c.participant_a')
             ->where('c.participant_b', $userId)
             ->where('c.deleted_by_b', 0)
             ->select(
                 'c.convo_id',
                 'c.participant_b as my_user_id',
                 'c.participant_a as contact_id',
-                'ua.full_name as contact_name',
-                'ua.role as contact_role'
+                DB::raw("COALESCE(ua.full_name, 'Unknown User') as contact_name"),
+                DB::raw("COALESCE(ua.role, 'User') as contact_role")
             )
-            ->selectRaw('(SELECT body FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC LIMIT 1) as last_message')
-            ->selectRaw('(SELECT sent_at FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC LIMIT 1) as last_message_at')
-            ->selectRaw('(SELECT COUNT(*) FROM messages WHERE messages.convo_id = c.convo_id AND is_read = 0 AND sender_id = c.participant_a) as unread_count');
+            ->selectRaw('(SELECT body FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC, message_id DESC LIMIT 1) as last_message')
+            ->selectRaw('(SELECT sent_at FROM messages WHERE messages.convo_id = c.convo_id ORDER BY sent_at DESC, message_id DESC LIMIT 1) as last_message_at')
+            ->selectRaw('(SELECT COUNT(*) FROM messages WHERE messages.convo_id = c.convo_id AND is_read = 0 AND sender_id != ' . $userId . ') as unread_count');
 
         return $queryB->unionAll($queryA);
     }
@@ -118,7 +120,11 @@ class DashboardController extends Controller
             ->update(['is_online' => 0]);
 
         $userId = Auth::id();
-        $inboxData = DB::query()->fromSub($this->getInboxQuery($userId), 'inbox')->orderByDesc('last_message_at')->get();
+        $inboxData = DB::query()->fromSub($this->getInboxQuery($userId), 'inbox')
+            ->whereNotNull('last_message')
+            ->orderByDesc('unread_count')
+            ->orderByDesc('last_message_at')
+            ->get();
 
         return [
             'messages' => $inboxData->take(5),
@@ -197,6 +203,40 @@ class DashboardController extends Controller
 
         $userId = Auth::id();
 
+        $inboxData = DB::query()->fromSub($this->getInboxQuery($userId), 'inbox')
+            ->whereNotNull('last_message')
+            ->orderByDesc('unread_count')
+            ->orderByDesc('last_message_at')
+            ->get();
+
+        $unreadCount = (int) $inboxData->sum('unread_count');
+
+        $recentMessages = $inboxData->take(5)->map(function ($msg) {
+            $lastMsg = (string) ($msg->last_message ?? '');
+            $isImage = Str::startsWith($lastMsg, '[IMAGE]:');
+            $isFile = Str::startsWith($lastMsg, '[FILE]:');
+
+            if ($isImage) {
+                $preview = 'Sent a photo';
+            } elseif ($isFile) {
+                $preview = 'Sent a file';
+            } else {
+                $preview = Str::limit($lastMsg, 42);
+            }
+
+            return [
+                'contact_id' => $msg->contact_id,
+                'contact_name' => $msg->contact_name,
+                'last_message' => $msg->last_message,
+                'preview_text' => $preview,
+                'is_image' => $isImage,
+                'is_file' => $isFile,
+                'unread_count' => (int) ($msg->unread_count ?? 0),
+                'last_message_at' => $msg->last_message_at,
+                'time_ago' => $msg->last_message_at ? \Carbon\Carbon::parse($msg->last_message_at)->diffForHumans(null, true, true) : ''
+            ];
+        })->values();
+
         $recentNotifs = DB::table('notifications')
             ->where('user_id', $userId)
             ->where('type', '!=', 'new_message')
@@ -210,7 +250,8 @@ class DashboardController extends Controller
 
         return response()->json([
             'success' => true,
-            'unread_count' => (int) DB::query()->fromSub($this->getInboxQuery($userId), 'inbox')->sum('unread_count'),
+            'unread_count' => $unreadCount,
+            'recent_messages' => $recentMessages,
             'unread_notifs_count' => DB::table('notifications')
                 ->where('user_id', $userId)
                 ->where('is_read', 0)
@@ -279,6 +320,15 @@ class DashboardController extends Controller
                         ->where('is_read', 0)
                         ->update(['is_read' => 1]);
 
+                    DB::table('notifications')
+                        ->where('user_id', $userId)
+                        ->where('type', 'new_message')
+                        ->where('is_read', 0)
+                        ->update([
+                            'is_read' => 1,
+                            'read_at' => now()
+                        ]);
+
                     return response()->json(['success' => true, 'message' => 'Cleared.']);
                 }
 
@@ -296,6 +346,15 @@ class DashboardController extends Controller
                         ->where('sender_id', $parsedSenderId)
                         ->where('is_read', 0)
                         ->update(['is_read' => 1]);
+
+                    DB::table('notifications')
+                        ->where('user_id', $userId)
+                        ->where('type', 'new_message')
+                        ->where('is_read', 0)
+                        ->update([
+                            'is_read' => 1,
+                            'read_at' => now()
+                        ]);
                 }
 
                 return response()->json(['success' => true]);
