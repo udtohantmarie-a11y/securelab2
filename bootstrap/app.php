@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -32,3 +32,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+// 🟢 Pre-set application namespace so Laravel never searches for composer.json at runtime
+(function ($app) {
+    try {
+        $ref = new \ReflectionProperty($app, 'namespace');
+        $ref->setValue($app, 'App\\');
+    } catch (\Throwable $e) {
+        //
+    }
+})($app);
+
+return $app;
