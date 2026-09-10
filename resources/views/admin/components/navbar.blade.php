@@ -321,7 +321,9 @@
     </div>
 </div>
 
-<audio id="doorbellChime" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+<audio id="soundNotification" src="{{ asset('assets/sounds/notification.mp3') }}" preload="auto"></audio>
+<audio id="soundAlarm" src="{{ asset('assets/sounds/alarm.mp3') }}" preload="auto"></audio>
+<audio id="doorbellChime" src="{{ asset('assets/sounds/notification.mp3') }}" preload="auto"></audio>
 
 <style>
     .cursor-pointer { cursor: pointer; }
@@ -378,13 +380,59 @@
 </style>
 
 <script>
+    window.playNotificationSound = function() {
+        try {
+            const audio = document.getElementById('soundNotification') || document.getElementById('doorbellChime');
+            if (audio) {
+                audio.currentTime = 0;
+                const p = audio.play();
+                if (p !== undefined) {
+                    p.catch(e => console.log('Audio autoplay prevented:', e));
+                }
+            }
+        } catch (e) {}
+    };
+
+    window.playAlarmSound = function() {
+        try {
+            const audio = document.getElementById('soundAlarm');
+            if (audio) {
+                audio.currentTime = 0;
+                const p = audio.play();
+                if (p !== undefined) {
+                    p.catch(e => console.log('Alarm autoplay prevented:', e));
+                }
+            }
+        } catch (e) {}
+    };
+
+    let audioUnlocked = false;
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        const audio = document.getElementById('soundNotification');
+        if (audio) {
+            audio.muted = true;
+            const p = audio.play();
+            if (p !== undefined) {
+                p.then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.muted = false;
+                    audioUnlocked = true;
+                }).catch(() => {});
+            }
+        }
+    }
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+
     function triggerGlobalAlertModal(notif) {
         if (notif.type === 'doorbell') {
             const doorbellModalEl = document.getElementById('doorbellLiveModal');
             const doorbellModal = new bootstrap.Modal(doorbellModalEl);
-            const chime = document.getElementById('doorbellChime');
             
-            chime.play().catch(e => console.log('Audio autoplay blocked by browser:', e));
+            window.playNotificationSound();
             
             document.getElementById('dismissDoorbellBtn').onclick = function() {
                 fetch('{{ route("messages.read") }}', {
@@ -396,8 +444,6 @@
                     },
                     body: JSON.stringify({ notif_id: notif.notif_id })
                 });
-                chime.pause();
-                chime.currentTime = 0;
             };
 
             doorbellModal.show();
@@ -416,12 +462,15 @@
         if (notif.title.includes('Door Left Open')) {
             iconDiv.innerHTML = '<i class="fas fa-door-open fa-4x text-warning fa-shake"></i>';
             titleEl.className = 'fw-bold mb-2 text-warning';
-        } else if (notif.type === 'intrusion_alert' || notif.title.includes('Invalid')) {
+            window.playNotificationSound();
+        } else if (notif.type === 'intrusion_alert' || notif.title.includes('Invalid') || notif.title.includes('CRITICAL')) {
             iconDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-4x text-danger fa-fade"></i>';
             titleEl.className = 'fw-bold mb-2 text-danger';
+            window.playAlarmSound();
         } else {
             iconDiv.innerHTML = '<i class="fas fa-shield-alt fa-4x text-primary"></i>';
             titleEl.className = 'fw-bold mb-2 text-primary';
+            window.playNotificationSound();
         }
 
         titleEl.innerText = notif.title;
@@ -557,19 +606,36 @@
         });
     }
 
+    let lastKnownUnreadMsgs = parseInt('{{ $totalUnreadMessages ?? 0 }}') || 0;
+    let lastKnownUnreadNotifs = parseInt('{{ $totalUnreadNotifs ?? 0 }}') || 0;
+    let isInitialNavbarPoll = true;
+
     function pollNavbarData() {
         fetch('{{ route("messages.unreadCount") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(response => response.json())
         .then(data => {
             if(data.success) {
+                const currentUnreadMsgs = parseInt(data.unread_count) || 0;
+                const currentUnreadNotifs = parseInt(data.unread_notifs_count) || 0;
+
+                // Play notification mp3 if incoming message or notification count increased
+                if (!isInitialNavbarPoll) {
+                    if (currentUnreadMsgs > lastKnownUnreadMsgs || currentUnreadNotifs > lastKnownUnreadNotifs) {
+                        window.playNotificationSound();
+                    }
+                }
+                isInitialNavbarPoll = false;
+                lastKnownUnreadMsgs = currentUnreadMsgs;
+                lastKnownUnreadNotifs = currentUnreadNotifs;
+
                 document.querySelectorAll('.msg-count-badge').forEach(badge => {
-                    badge.innerText = data.unread_count;
-                    badge.style.display = data.unread_count > 0 ? 'flex' : 'none';
+                    badge.innerText = currentUnreadMsgs;
+                    badge.style.display = currentUnreadMsgs > 0 ? 'flex' : 'none';
                 });
 
                 document.querySelectorAll('.notif-count-badge').forEach(badge => {
-                    badge.innerText = data.unread_notifs_count;
-                    badge.style.display = data.unread_notifs_count > 0 ? 'flex' : 'none';
+                    badge.innerText = currentUnreadNotifs;
+                    badge.style.display = currentUnreadNotifs > 0 ? 'flex' : 'none';
                 });
 
                 if(data.recent_messages) {

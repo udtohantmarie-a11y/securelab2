@@ -696,6 +696,11 @@
                         const emptyPlaceholder = document.getElementById('emptyChatPlaceholder');
                         if (emptyPlaceholder) emptyPlaceholder.remove();
 
+                        const hasIncoming = data.messages.some(m => !m.is_me);
+                        if (hasIncoming && typeof window.playNotificationSound === 'function') {
+                            window.playNotificationSound();
+                        }
+
                         let shouldScroll = false;
                         const isNearBottom = (chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight) < 180;
 
