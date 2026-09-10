@@ -489,6 +489,7 @@
         // AUTO-SAVE DARK MODE TOGGLE SCRIPT
         document.getElementById('userThemeToggle').addEventListener('change', function() {
             let isDarkMode = this.checked ? 1 : 0;
+            localStorage.setItem('securelab_dark_mode', isDarkMode ? 'true' : 'false');
 
             fetch('{{ route("profile.toggle.theme") }}', {
                 method: 'POST',

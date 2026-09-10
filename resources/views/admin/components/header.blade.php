@@ -39,6 +39,7 @@
 
         /* Typography */
         --text-dark: #0f172a;
+        --text-main: #0f172a;
         --text-body: #334155;
         --text-muted: #64748b;
         --text-subtle: #94a3b8;
@@ -366,12 +367,14 @@
        🌙 ADVANCED DARK MODE SYSTEM
     ========================================================= */
     body.dark-mode {
+        color-scheme: dark;
         --bg-body: #0d131f;
         --bg-surface: #141c2e;
         --bg-subtle: #192338;
         --border-color: #24314c;
         --border-color-light: #1f2b42;
         --text-dark: #f8fafc;
+        --text-main: #f8fafc;
         --text-body: #cbd5e1;
         --text-muted: #94a3b8;
         --text-subtle: #64748b;
@@ -391,7 +394,12 @@
     body.dark-mode h5,
     body.dark-mode h6,
     body.dark-mode .fw-bold,
-    body.dark-mode strong {
+    body.dark-mode strong,
+    body.dark-mode b,
+    body.dark-mode [style*="color: var(--text-main)"],
+    body.dark-mode [style*="color:var(--text-main)"],
+    body.dark-mode [style*="color: var(--text-dark)"],
+    body.dark-mode [style*="color:var(--text-dark)"] {
         color: #f8fafc !important;
     }
 
@@ -399,8 +407,29 @@
     body.dark-mode p.text-muted,
     body.dark-mode span.text-muted,
     body.dark-mode label.text-muted,
-    body.dark-mode small.text-muted {
+    body.dark-mode small.text-muted,
+    body.dark-mode [style*="color: var(--text-muted)"],
+    body.dark-mode [style*="color:var(--text-muted)"] {
         color: #94a3b8 !important;
+    }
+
+    body.dark-mode .text-secondary {
+        color: #94a3b8 !important;
+    }
+    body.dark-mode .text-primary {
+        color: #60a5fa !important;
+    }
+    body.dark-mode .text-success {
+        color: #34d399 !important;
+    }
+    body.dark-mode .text-warning {
+        color: #fbbf24 !important;
+    }
+    body.dark-mode .text-danger {
+        color: #f87171 !important;
+    }
+    body.dark-mode .text-info {
+        color: #38bdf8 !important;
     }
 
     /* Containers in Dark Mode */
@@ -418,8 +447,10 @@
     }
 
     body.dark-mode .bg-light,
-    body.dark-mode .bg-white {
+    body.dark-mode .bg-white,
+    body.dark-mode .surface-box {
         background-color: var(--bg-subtle) !important;
+        border-color: var(--border-color) !important;
         color: #f8fafc !important;
     }
 
@@ -478,25 +509,347 @@
         color: #ffffff !important;
     }
 
-    /* Tables Dark Mode */
+    /* =========================================================
+       📊 MASTER TABLE DARK MODE STYLING
+    ========================================================= */
+    body.dark-mode .table,
     body.dark-mode table,
-    body.dark-mode .table-custom th,
-    body.dark-mode .table-custom td {
+    body.dark-mode .table-custom,
+    body.dark-mode .dashboard-table,
+    body.dark-mode .table-pending,
+    body.dark-mode #auditLogsTable,
+    body.dark-mode #alertsTable,
+    body.dark-mode #usersTable,
+    body.dark-mode #reportsTable {
+        --bs-table-color: #f8fafc !important;
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #24314c !important;
+        --bs-table-striped-bg: rgba(255, 255, 255, 0.02) !important;
+        --bs-table-striped-color: #f8fafc !important;
+        --bs-table-active-bg: rgba(255, 255, 255, 0.05) !important;
+        --bs-table-active-color: #f8fafc !important;
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.04) !important;
+        --bs-table-hover-color: #ffffff !important;
         color: #f8fafc !important;
+        border-color: #24314c !important;
+    }
+
+    body.dark-mode .table > :not(caption) > * > *,
+    body.dark-mode table > :not(caption) > * > * {
+        background-color: transparent !important;
+        border-bottom-color: #24314c !important;
+        box-shadow: none !important;
+        color: #f8fafc !important;
+    }
+
+    /* Table Headers */
+    body.dark-mode table thead,
+    body.dark-mode .table thead,
+    body.dark-mode table thead tr,
+    body.dark-mode .table thead tr,
+    body.dark-mode table thead th,
+    body.dark-mode .table thead th,
+    body.dark-mode .table-custom th,
+    body.dark-mode .table-light th,
+    body.dark-mode #auditLogsTable thead th,
+    body.dark-mode #alertsTable thead th,
+    body.dark-mode #usersTable thead th,
+    body.dark-mode #reportsTable thead th {
+        background-color: #192338 !important;
+        color: #cbd5e1 !important;
+        border-bottom: 2px solid #24314c !important;
+        border-top: none !important;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    /* Table Rows */
+    body.dark-mode table tbody tr,
+    body.dark-mode .table tbody tr,
+    body.dark-mode #auditLogsTable tbody tr,
+    body.dark-mode #alertsTable tbody tr,
+    body.dark-mode #usersTable tbody tr {
+        border-bottom: 1px solid #24314c !important;
+        background-color: transparent !important;
+        transition: background-color 0.15s ease;
+    }
+
+    /* Table Cells */
+    body.dark-mode table tbody td,
+    body.dark-mode .table tbody td,
+    body.dark-mode .table-custom td,
+    body.dark-mode .table-pending td,
+    body.dark-mode .dashboard-table td,
+    body.dark-mode #auditLogsTable tbody td,
+    body.dark-mode #alertsTable tbody td,
+    body.dark-mode #usersTable td,
+    body.dark-mode #reportsTable tbody td {
+        color: #f1f5f9 !important;
+        border-bottom: 1px solid #24314c !important;
+        background-color: transparent !important;
+    }
+
+    /* Table Hover States */
+    body.dark-mode .table-hover tbody tr:hover,
+    body.dark-mode .table-hover tbody tr:hover td,
+    body.dark-mode .table-custom tbody tr:hover,
+    body.dark-mode .table-custom tbody tr:hover td,
+    body.dark-mode table tbody tr:hover td,
+    body.dark-mode #auditLogsTable tbody tr:hover,
+    body.dark-mode #auditLogsTable tbody tr:hover td,
+    body.dark-mode #alertsTable tbody tr:hover,
+    body.dark-mode #alertsTable tbody tr:hover td,
+    body.dark-mode #usersTable tbody tr:hover,
+    body.dark-mode #usersTable tbody tr:hover td {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: #ffffff !important;
+    }
+
+    /* Elements inside table cells */
+    body.dark-mode table td .text-dark,
+    body.dark-mode table td strong,
+    body.dark-mode table td b,
+    body.dark-mode table td .fw-bold,
+    body.dark-mode table td h5,
+    body.dark-mode table td h6,
+    body.dark-mode table td a:not(.btn),
+    body.dark-mode table td span:not(.badge):not(.badge-action-pill):not(.role-pill):not(.timestamp-chip):not(.role-badge-pending):not(.pill-critical):not(.pill-warning):not(.pill-info):not(.status-active-badge):not(.status-resolved-badge),
+    body.dark-mode table td p,
+    body.dark-mode table td div:not(.avatar-initial-sm):not(.avatar-circle-sm):not(.avatar-img-table):not(.rounded-circle):not(.stat-icon-wrapper) {
+        color: #f8fafc !important;
+    }
+
+    body.dark-mode table td .text-muted,
+    body.dark-mode table td small,
+    body.dark-mode table td .small.fw-semibold,
+    body.dark-mode table td .small.fw-medium {
+        color: #94a3b8 !important;
+    }
+
+    /* Chips, Badges and Pills in Dark Mode Tables */
+    body.dark-mode .timestamp-chip {
+        background: #192338 !important;
+        color: #93c5fd !important;
+        border: 1px solid #24314c !important;
+    }
+
+    body.dark-mode .method-badge {
+        background: #192338 !important;
+        color: #e2e8f0 !important;
+        border: 1px solid #24314c !important;
+    }
+
+    body.dark-mode .role-badge-pending {
+        background: #192338 !important;
+        border: 1px solid #24314c !important;
+        color: #f8fafc !important;
+    }
+
+    body.dark-mode .badge.bg-secondary,
+    body.dark-mode .badge.text-secondary {
+        background: rgba(148, 163, 184, 0.15) !important;
+        color: #cbd5e1 !important;
+        border-color: rgba(148, 163, 184, 0.3) !important;
+    }
+
+    body.dark-mode .badge.bg-primary.bg-opacity-10,
+    body.dark-mode .badge.text-primary {
+        background: rgba(59, 130, 246, 0.2) !important;
+        color: #60a5fa !important;
+        border-color: rgba(96, 165, 250, 0.3) !important;
+    }
+
+    body.dark-mode .badge.bg-success.bg-opacity-10,
+    body.dark-mode .badge.text-success {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
+        border-color: rgba(52, 211, 153, 0.3) !important;
+    }
+
+    body.dark-mode .badge.bg-warning.bg-opacity-10,
+    body.dark-mode .badge.text-warning {
+        background: rgba(245, 158, 11, 0.2) !important;
+        color: #fbbf24 !important;
+        border-color: rgba(251, 191, 36, 0.3) !important;
+    }
+
+    body.dark-mode .badge.bg-danger.bg-opacity-10,
+    body.dark-mode .badge.text-danger {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+        border-color: rgba(248, 113, 113, 0.3) !important;
+    }
+
+    body.dark-mode .badge.bg-info.bg-opacity-10,
+    body.dark-mode .badge.text-info {
+        background: rgba(6, 182, 212, 0.2) !important;
+        color: #38bdf8 !important;
+        border-color: rgba(56, 189, 248, 0.3) !important;
+    }
+
+    body.dark-mode .action-primary,
+    body.dark-mode .role-admin {
+        background: rgba(59, 130, 246, 0.2) !important;
+        color: #60a5fa !important;
+        border-color: rgba(96, 165, 250, 0.3) !important;
+    }
+
+    body.dark-mode .role-staff {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
+        border-color: rgba(52, 211, 153, 0.3) !important;
+    }
+
+    body.dark-mode .role-dean {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+        border-color: rgba(248, 113, 113, 0.3) !important;
+    }
+
+    body.dark-mode .action-circle-btn {
+        background: #192338 !important;
+        border-color: #24314c !important;
+        color: #cbd5e1 !important;
+    }
+    body.dark-mode .action-circle-btn:hover {
+        background: #24314c !important;
+    }
+
+    body.dark-mode .table-responsive {
+        border-color: #24314c !important;
+    }
+
+    body.dark-mode .card.user-card-executive,
+    body.dark-mode .card.log-card-executive,
+    body.dark-mode .card.alert-card-executive {
+        background-color: var(--bg-surface) !important;
         border-color: var(--border-color) !important;
     }
-    body.dark-mode .table-light th,
-    body.dark-mode thead tr {
-        background-color: var(--bg-subtle) !important;
+
+    /* Date Inputs in Dark Mode */
+    body.dark-mode input[type="date"] {
+        color-scheme: dark !important;
+        background-color: #192338 !important;
+        color: #f8fafc !important;
+        border-color: #24314c !important;
+    }
+    body.dark-mode #clearDateFilter {
+        background: #192338 !important;
+        border-color: #24314c !important;
+        color: #94a3b8 !important;
+    }
+    body.dark-mode #clearDateFilter:hover {
+        background: #24314c !important;
+        color: #f8fafc !important;
+    }
+
+    /* DataTables Controls & Text in Dark Mode */
+    body.dark-mode .dataTables_wrapper .dataTables_length,
+    body.dark-mode .dataTables_wrapper .dataTables_filter,
+    body.dark-mode .dataTables_wrapper .dataTables_info,
+    body.dark-mode .dataTables_wrapper .dataTables_paginate {
+        color: #94a3b8 !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_length label,
+    body.dark-mode .dataTables_wrapper .dataTables_filter label {
+        color: #94a3b8 !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_filter input,
+    body.dark-mode .dataTables_wrapper .dataTables_length select {
+        background-color: #192338 !important;
+        border: 1px solid #24314c !important;
+        color: #f8fafc !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_filter input:focus,
+    body.dark-mode .dataTables_wrapper .dataTables_length select:focus {
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+        outline: none !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: #94a3b8 !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #192338 !important;
+        color: #ffffff !important;
+        border-color: #24314c !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #1a56db !important;
+        color: #ffffff !important;
+        border-color: #1a56db !important;
+    }
+
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        color: #475569 !important;
+    }
+
+    body.dark-mode .dataTables_empty {
+        color: #94a3b8 !important;
+        background-color: transparent !important;
+    }
+
+    /* Bootstrap 5 Pagination in Dark Mode */
+    body.dark-mode .pagination .page-link {
+        background-color: #192338 !important;
+        border-color: #24314c !important;
         color: #cbd5e1 !important;
-        border-bottom: 2px solid var(--border-color) !important;
     }
-    body.dark-mode tbody td {
-        border-bottom: 1px solid var(--border-color) !important;
+    body.dark-mode .pagination .page-item.active .page-link {
+        background-color: #1a56db !important;
+        border-color: #1a56db !important;
+        color: #ffffff !important;
     }
-    body.dark-mode .table-hover tbody tr:hover,
-    body.dark-mode .table-custom tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.04) !important;
+    body.dark-mode .pagination .page-item.disabled .page-link {
+        background-color: #141c2e !important;
+        border-color: #24314c !important;
+        color: #475569 !important;
+    }
+
+    /* DataTables Responsive Child Rows */
+    body.dark-mode table.dataTable > tbody > tr.child {
+        background-color: #141c2e !important;
+    }
+    body.dark-mode table.dataTable > tbody > tr.child ul.dtr-details {
+        color: #f1f5f9 !important;
+    }
+    body.dark-mode table.dataTable > tbody > tr.child span.dtr-title {
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+    }
+    body.dark-mode table.dataTable > tbody > tr.child span.dtr-data {
+        color: #f1f5f9 !important;
+    }
+
+    /* Select2 Dark Mode */
+    body.dark-mode .select2-container--default .select2-selection--single {
+        background-color: #192338 !important;
+        border-color: #24314c !important;
+        color: #f8fafc !important;
+    }
+    body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #f8fafc !important;
+    }
+    body.dark-mode .select2-dropdown {
+        background-color: #141c2e !important;
+        border-color: #24314c !important;
+        color: #f8fafc !important;
+    }
+    body.dark-mode .select2-container--default .select2-results__option {
+        color: #cbd5e1 !important;
+    }
+    body.dark-mode .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #1a56db !important;
         color: #ffffff !important;
     }
 
@@ -538,9 +891,18 @@
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        @if(Auth::check() && Auth::user()->dark_mode)
-            document.body.classList.add('dark-mode');
-        @endif
-    });
+    (function() {
+        const isDbDark = {{ (Auth::check() && Auth::user()->dark_mode) ? 'true' : 'false' }};
+        const localTheme = localStorage.getItem('securelab_dark_mode');
+        if (isDbDark || localTheme === 'true') {
+            document.documentElement.classList.add('dark-mode');
+            if (document.body) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.addEventListener("DOMContentLoaded", function() {
+                    document.body.classList.add('dark-mode');
+                });
+            }
+        }
+    })();
 </script>
