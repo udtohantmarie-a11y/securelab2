@@ -700,6 +700,14 @@
                         if (hasIncoming && typeof window.playNotificationSound === 'function') {
                             window.playNotificationSound();
                         }
+                        if (hasIncoming && document.hidden && typeof window.showSystemPopNotification === 'function') {
+                            const lastIncoming = data.messages.filter(m => !m.is_me).slice(-1)[0];
+                            if (lastIncoming) {
+                                const senderName = document.querySelector('.chat-header-info h6')?.innerText?.trim() || 'New Message';
+                                const preview = lastIncoming.is_image ? 'Sent a photo' : (lastIncoming.is_file ? 'Sent an attachment' : (lastIncoming.body || 'Sent you a message'));
+                                window.showSystemPopNotification('💬 ' + senderName, preview, window.location.href);
+                            }
+                        }
 
                         let shouldScroll = false;
                         const isNearBottom = (chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight) < 180;

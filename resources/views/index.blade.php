@@ -880,7 +880,7 @@
                 <!-- Right Content: System Info & Developers Credit -->
                 <div class="col-md-6 text-center text-md-end">
                     <p class="mb-1 small text-muted fw-medium">
-                        <i class="fas fa-shield-alt text-primary me-1"></i> <strong class="text-dark">IoT Smart Lock Portal</strong> developed by Udtohan, Villarin, and Cerida
+                        <i class="fas fa-shield-alt text-primary me-1"></i> <strong class="text-dark">SecureLab IoT Smart Access Control Portal</strong>
                     </p>
                     <div class="d-inline-flex align-items-center gap-2">
                         <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">

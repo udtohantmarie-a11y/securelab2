@@ -427,6 +427,61 @@
     document.addEventListener('keydown', unlockAudio, { once: true });
     document.addEventListener('touchstart', unlockAudio, { once: true });
 
+    // 🟢 Native System / Screen Pop-up Notification (OS Banner / Notification Tray)
+    window.showSystemPopNotification = function(title, body, targetUrl) {
+        if (!("Notification" in window)) return;
+
+        const iconUrl = '{{ asset("assets/img/tpc-logo.jpg") }}';
+
+        const trigger = function() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(function(reg) {
+                    reg.showNotification(title, {
+                        body: body,
+                        icon: iconUrl,
+                        badge: iconUrl,
+                        data: { url: targetUrl || window.location.href },
+                        vibrate: [200, 100, 200]
+                    });
+                }).catch(function() {
+                    try {
+                        const n = new Notification(title, { body: body, icon: iconUrl });
+                        if (targetUrl) {
+                            n.onclick = function() { window.focus(); window.location.href = targetUrl; };
+                        }
+                    } catch(e) {}
+                });
+            } else {
+                try {
+                    const n = new Notification(title, { body: body, icon: iconUrl });
+                    if (targetUrl) {
+                        n.onclick = function() { window.focus(); window.location.href = targetUrl; };
+                    }
+                } catch(e) {}
+            }
+        };
+
+        if (Notification.permission === 'granted') {
+            trigger();
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    trigger();
+                }
+            });
+        }
+    };
+
+    // Register Service Worker and Proactively Request Notification Permission on user interaction
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+    }
+    document.addEventListener('click', function requestNotifPermissionOnce() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().catch(function() {});
+        }
+    }, { once: true });
+
     function triggerGlobalAlertModal(notif) {
         if (notif.type === 'doorbell') {
             const doorbellModalEl = document.getElementById('doorbellLiveModal');
@@ -618,10 +673,26 @@
                 const currentUnreadMsgs = parseInt(data.unread_count) || 0;
                 const currentUnreadNotifs = parseInt(data.unread_notifs_count) || 0;
 
-                // Play notification mp3 if incoming message or notification count increased
+                // Play notification mp3 and trigger OS Pop-up banner if incoming message or notification count increased
                 if (!isInitialNavbarPoll) {
-                    if (currentUnreadMsgs > lastKnownUnreadMsgs || currentUnreadNotifs > lastKnownUnreadNotifs) {
+                    if (currentUnreadMsgs > lastKnownUnreadMsgs) {
                         window.playNotificationSound();
+                        const topMsg = (data.recent_messages && data.recent_messages.length > 0) ? data.recent_messages[0] : null;
+                        const sender = topMsg ? topMsg.contact_name : 'New Message';
+                        const preview = topMsg ? (topMsg.preview_text || 'Sent you a message') : 'You received a new message';
+                        const msgUrl = topMsg ? ('{{ url("/messages?user=") }}' + topMsg.contact_id) : '{{ route("messages.inbox") }}';
+                        window.showSystemPopNotification('💬 ' + sender, preview, msgUrl);
+                    }
+                    if (currentUnreadNotifs > lastKnownUnreadNotifs) {
+                        window.playNotificationSound();
+                        const topNotif = (data.recent_notifications && data.recent_notifications.length > 0) ? data.recent_notifications[0] : null;
+                        if (topNotif) {
+                            let notifUrl = '{{ route("dashboard.alerts") }}';
+                            if (topNotif.type === 'door_unlocked' || topNotif.type === 'door_locked') {
+                                notifUrl = '{{ route("audit.logs") }}';
+                            }
+                            window.showSystemPopNotification('🔔 ' + (topNotif.title || 'Security Notification'), topNotif.body || 'New alert from SecureLab', notifUrl);
+                        }
                     }
                 }
                 isInitialNavbarPoll = false;
@@ -652,6 +723,11 @@
                             if (notif.is_read == 0 && (notif.type === 'doorbell' || notif.type === 'intrusion_alert') && parseInt(notif.notif_id) > lastGlobalAlertId) {
                                 localStorage.setItem('lastGlobalAlertId', notif.notif_id); 
                                 triggerGlobalAlertModal(notif);
+                                window.showSystemPopNotification(
+                                    (notif.type === 'doorbell' ? '🔔 Doorbell Alert' : '🚨 CRITICAL ALERT') + ': ' + notif.title,
+                                    notif.body,
+                                    '{{ route("dashboard.alerts") }}'
+                                );
                             }
 
                             let icon = 'fa-info-circle'; let iconColor = 'text-primary'; let bgLight = 'bg-primary bg-opacity-10'; let link = '{{ route("audit.logs") }}';

@@ -17,8 +17,8 @@
             <!-- Right Content: System Info & Status -->
             <div class="col-md-6 text-center text-md-end">
                 <div class="d-flex align-items-center justify-content-center justify-content-md-end gap-3 flex-wrap">
-                    <span class="text-muted small" style="font-size: 11px;">
-                        By <strong class="text-dark">Udtohan, Cerida, Villarin</strong>
+                    <span class="text-muted small d-inline-flex align-items-center gap-1" style="font-size: 11px;">
+                        <i class="fas fa-shield-alt text-primary"></i> <strong class="text-dark">SecureLab Smart Access Control</strong>
                     </span>
                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-2 shadow-xs" style="font-size: 10px; letter-spacing: 0.5px;">
                         <span class="spinner-grow spinner-grow-sm text-success" style="width: 7px; height: 7px;" role="status"></span>

@@ -29,28 +29,82 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();
 });
 
-// Fetch Event: Dito natin aayusin ang error
+// Fetch Event: Do not intercept POST, API, messages, or polling routes
 self.addEventListener('fetch', (event) => {
-    // 1. IMPORTANTE: Huwag i-cache ang POST requests (Login/Logout)
-    // Ang Service Worker ay para sa GET requests lang (images, css, html)
     if (event.request.method !== 'GET') {
         return; 
     }
 
+    const url = new URL(event.request.url);
+    // Let dynamic routes pass straight through without Service Worker interference
+    if (url.pathname.startsWith('/messages') || 
+        url.pathname.startsWith('/api') || 
+        url.pathname.startsWith('/audit-logs') || 
+        url.pathname.startsWith('/alerts') ||
+        url.pathname.startsWith('/dashboard') ||
+        url.pathname.startsWith('/user-database') ||
+        url.pathname.startsWith('/users') ||
+        url.pathname.startsWith('/logout') ||
+        url.pathname.startsWith('/login') ||
+        url.search) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then((response) => {
-            // I-return ang cache kung meron, kung wala ay mag-network fetch
             return response || fetch(event.request).catch(() => {
-                // Offline fallback para sa navigation
                 if (event.request.mode === 'navigate') {
                     return caches.match('/');
                 }
-                // Siguraduhin na laging may valid na Response para hindi mag-error
-                return new Response('Network error occurred', {
-                    status: 408,
+                return new Response('Network unavailable', {
+                    status: 503,
                     headers: { 'Content-Type': 'text/plain' }
                 });
             });
         })
+    );
+});
+
+// Handle Notification Click (brings window to focus when clicked)
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            for (let i = 0; i < clientList.length; i++) {
+                const client = clientList[i];
+                if (client.url.includes(targetUrl) && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(targetUrl);
+            }
+        })
+    );
+});
+
+// Handle Background Push Event (Web Push API)
+self.addEventListener('push', (event) => {
+    let data = { title: 'SecureLab Smart Access', body: 'New security update available.', url: '/' };
+    try {
+        if (event.data) {
+            data = event.data.json();
+        }
+    } catch (e) {
+        data.body = event.data ? event.data.text() : data.body;
+    }
+
+    const options = {
+        body: data.body,
+        icon: '/assets/img/tpc-logo.jpg',
+        badge: '/assets/img/tpc-logo.jpg',
+        vibrate: [200, 100, 200],
+        data: { url: data.url || '/' }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
     );
 });
