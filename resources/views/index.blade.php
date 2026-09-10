@@ -382,6 +382,340 @@
             color: #0a2540;
             letter-spacing: -0.8px;
         }
+
+        /* 🟢 CYBER-PHYSICAL INTERACTIVE SIMULATOR (OPTION 3) */
+        .sim-shell {
+            background: linear-gradient(165deg, #091322 0%, #0c1c33 50%, #060e1a 100%);
+            border-radius: 26px;
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            box-shadow: 0 25px 50px -12px rgba(2, 6, 23, 0.6), 0 0 40px rgba(13, 110, 253, 0.15);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.35s ease;
+        }
+        .sim-shell::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.9), transparent);
+            z-index: 10;
+        }
+
+        .sim-hud-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sim-node-badge {
+            background: rgba(13, 110, 253, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-signal-pill {
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 30px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sim-sound-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sim-sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Simulator Stage Visualizer */
+        .sim-stage {
+            padding: 22px 22px 18px;
+            background: radial-gradient(circle at 50% 30%, rgba(13, 110, 253, 0.12) 0%, transparent 70%);
+            position: relative;
+        }
+
+        .sim-visual-core {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .sim-visual-core.state-armed {
+            border-color: rgba(34, 197, 94, 0.35);
+            box-shadow: inset 0 0 25px rgba(34, 197, 94, 0.08);
+        }
+        .sim-visual-core.state-scanning {
+            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: inset 0 0 35px rgba(56, 189, 248, 0.2), 0 0 20px rgba(56, 189, 248, 0.25);
+        }
+        .sim-visual-core.state-unlocked {
+            border-color: rgba(13, 202, 240, 0.6);
+            box-shadow: inset 0 0 35px rgba(13, 202, 240, 0.18), 0 0 20px rgba(13, 202, 240, 0.3);
+        }
+        .sim-visual-core.state-alarm {
+            border-color: rgba(239, 68, 68, 0.8);
+            box-shadow: inset 0 0 45px rgba(239, 68, 68, 0.35), 0 0 30px rgba(239, 68, 68, 0.4);
+            animation: redStrobe 0.8s infinite alternate ease-in-out;
+        }
+        @keyframes redStrobe {
+            0% { background: rgba(239, 68, 68, 0.12); }
+            100% { background: rgba(239, 68, 68, 0.32); }
+        }
+
+        .sim-avatar-orb {
+            width: 68px; height: 68px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .sim-avatar-orb.state-armed {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ade80;
+            border: 2px solid #22c55e;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+        }
+        .sim-avatar-orb.state-scanning {
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        }
+        .sim-avatar-orb.state-unlocked {
+            background: rgba(13, 202, 240, 0.2);
+            color: #0dcaf0;
+            border: 2px solid #0dcaf0;
+            box-shadow: 0 0 25px rgba(13, 202, 240, 0.6);
+        }
+        .sim-avatar-orb.state-alarm {
+            background: rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+            border: 2px solid #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+            animation: pulseAlarm 0.7s infinite alternate;
+        }
+        @keyframes pulseAlarm {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.08); }
+        }
+
+        /* Laser Sweep Animation for Fingerprint */
+        .sim-laser-sweep {
+            position: absolute;
+            left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, #38bdf8, #ffffff, #38bdf8, transparent);
+            box-shadow: 0 0 10px #38bdf8, 0 0 20px #0ea5e9;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .sim-visual-core.is-scanning .sim-laser-sweep {
+            opacity: 1;
+            animation: sweepScan 1.1s infinite alternate ease-in-out;
+        }
+        @keyframes sweepScan {
+            0% { top: 10%; }
+            100% { top: 90%; }
+        }
+
+        /* Deadbolt Bolt Indicator Bar */
+        .deadbolt-cylinder {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        /* Simulator Action Buttons */
+        .sim-btn-deck {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 7px;
+            margin-top: 14px;
+        }
+        @media (max-width: 576px) {
+            .sim-btn-deck {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .sim-btn-key {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 10px 6px;
+            border-radius: 12px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-align: center;
+            user-select: none;
+        }
+        .sim-btn-key:hover {
+            background: rgba(13, 110, 253, 0.25);
+            border-color: rgba(56, 189, 248, 0.5);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+        .sim-btn-key:active {
+            transform: translateY(0);
+        }
+        .sim-btn-key.active-action {
+            background: rgba(13, 110, 253, 0.4);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+        }
+        .sim-btn-key.btn-tamper:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        /* Telemetry Row in Simulator */
+        .sim-vitals-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 14px;
+        }
+        @media (max-width: 576px) {
+            .sim-vitals-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .sim-vital-box {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 11px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+        .sim-vital-lbl {
+            font-size: 0.63rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .sim-vital-val {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+
+        /* Dynamic Live Audit Console */
+        .sim-audit-console {
+            background: rgba(10, 15, 29, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 10px 14px;
+            margin-top: 14px;
+            max-height: 125px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
+        }
+        .sim-audit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.72rem;
+            animation: slideInAudit 0.35s ease-out;
+        }
+        .sim-audit-item:last-child {
+            border-bottom: none;
+        }
+        @keyframes slideInAudit {
+            0% { opacity: 0; transform: translateY(-8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 4-Layer Defense Grid */
+        .defense-layer-card {
+            background: #ffffff;
+            border-radius: 22px;
+            border: 1.5px solid #e2e8f0;
+            padding: 28px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.35s ease;
+            height: 100%;
+        }
+        .defense-layer-card:hover {
+            transform: translateY(-6px);
+            border-color: #38bdf8;
+            box-shadow: 0 18px 36px rgba(13, 110, 253, 0.1);
+        }
+        .defense-layer-num {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: rgba(226, 232, 240, 0.7);
+            line-height: 1;
+            user-select: none;
+        }
+        .defense-layer-card:hover .defense-layer-num {
+            color: rgba(13, 110, 253, 0.15);
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -454,10 +788,16 @@
                             Laboratory Portal
                         </h1>
 
+                        <!-- Interactive Sandbox Indicator -->
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-3 shadow-sm" style="background: rgba(13, 110, 253, 0.08); border: 1.5px dashed rgba(13, 110, 253, 0.35);">
+                            <span class="spinner-grow spinner-grow-sm text-primary" style="width: 8px; height: 8px;"></span>
+                            <span class="small fw-bold text-primary">Interactive IoT Sandbox: Test hardware actions on the simulator! 👉</span>
+                        </div>
+
                         <p class="text-muted lead fw-normal mb-4" style="font-size: 1.05rem; line-height: 1.65;">
                             An IoT-powered smart door lock and laboratory monitoring system engineered for authorized 
                             <strong>College Deans</strong>, <strong>Faculty & Staff</strong>, and <strong>System Administrators</strong>. 
-                            Seamlessly combining biometric authentication with real-time audit logging.
+                            Combining optical biometric authentication with FIDO2 cryptographic passkeys and real-time incident telemetry.
                         </p>
 
                         <!-- Stakeholder Roles Indicator -->
@@ -491,11 +831,11 @@
                         <div class="d-flex align-items-center gap-4 mt-4 pt-2 text-muted small fw-semibold">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fas fa-check-circle text-success fs-6"></i>
-                                <span>Biometric Fingerprint</span>
+                                <span>500 DPI Biometrics</span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fas fa-check-circle text-success fs-6"></i>
-                                <span>Keypad PIN Fallback</span>
+                                <span>FIDO2 Passkeys</span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fas fa-check-circle text-success fs-6"></i>
@@ -505,116 +845,152 @@
 
                     </div>
 
-                    <!-- Right Hero Visual Showcase: Interactive Live Hardware Status Card -->
+                    <!-- Right Hero Visual Showcase: Interactive Cyber-Physical Laboratory Simulator -->
                     <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
-                        <div class="preview-hardware-card">
+                        <div class="sim-shell">
                             
-                            <!-- Header Bar -->
-                            <div class="preview-hardware-header d-flex justify-content-between align-items-center">
+                            <!-- HUD Top Bar -->
+                            <div class="sim-hud-header d-flex justify-content-between align-items-center">
                                 <div>
                                     <div class="d-flex align-items-center gap-2 mb-1">
-                                        <span class="badge bg-white bg-opacity-20 rounded-pill px-2 py-1 small text-white fw-bold">
-                                            <i class="fas fa-satellite-dish me-1"></i> ESP8266 Live Node
+                                        <span class="sim-node-badge">
+                                            <i class="fas fa-microchip"></i> ESP8266 Live Node
                                         </span>
-                                        <span class="badge bg-success rounded-pill px-2 py-1 small text-white fw-bold">
-                                            <span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span> Online
+                                        <span class="sim-signal-pill">
+                                            <i class="fas fa-wifi"></i> -58 dBm • 99%
                                         </span>
                                     </div>
-                                    <h5 class="fw-bold mb-0 text-white">BSIS Computer Laboratory</h5>
-                                    <small class="opacity-75" style="font-size: 0.78rem;">Room 101 • Dedicated NodeMCU Smart Lock</small>
+                                    <h6 class="fw-bold mb-0 text-white" style="letter-spacing: -0.2px;">BSIS Laboratory Room 101</h6>
+                                    <small class="text-white-50" style="font-size: 0.72rem;">Hardware Hub • Solenoid 12V + Optical Biometrics</small>
                                 </div>
-                                <div class="bg-white bg-opacity-10 p-3 rounded-circle border border-white border-opacity-25">
-                                    <i class="fas fa-lock fs-3 text-white"></i>
+                                <div class="d-flex flex-column align-items-end gap-2">
+                                    <span id="simStateBadge" class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-1 rounded-pill fw-bold" style="font-size: 0.72rem;">
+                                        <i class="fas fa-shield-alt me-1"></i> ARMED & LOCKED
+                                    </span>
+                                    <button id="simSoundToggle" class="sim-sound-toggle" title="Toggle audio effects">
+                                        <i id="simSoundIcon" class="fas fa-volume-up text-info"></i> <span id="simSoundLabel">Audio: ON</span>
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Interactive Card Body -->
-                            <div class="p-4 bg-white">
-                                
-                                <!-- Primary Door Lock Status Widget -->
-                                <div class="d-flex align-items-center justify-content-between p-3 rounded-4 mb-3" style="background: linear-gradient(135deg, rgba(32, 201, 151, 0.08) 0%, rgba(13, 110, 253, 0.05) 100%); border: 1.5px solid rgba(32, 201, 151, 0.25);">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
-                                            <i class="fas fa-shield-check fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <span class="text-uppercase fw-bold text-success" style="font-size: 0.75rem; letter-spacing: 0.5px;">Laboratory Security State</span>
-                                            <h5 class="fw-bolder mb-0 text-dark">SECURED & LOCKED</h5>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
-                                        <i class="fas fa-check me-1"></i> ARMED
-                                    </span>
-                                </div>
+                            <!-- Visual Chamber Stage -->
+                            <div class="sim-stage">
+                                <!-- Main Holographic Status Core -->
+                                <div id="simVisualCore" class="sim-visual-core state-armed">
+                                    <!-- Laser Sweep Line -->
+                                    <div class="sim-laser-sweep"></div>
 
-                                <!-- Hardware Vitals Grid -->
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <div class="vital-pill">
-                                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                                <small class="text-muted fw-bold" style="font-size: 0.72rem;">BIOMETRIC SCANNER</small>
-                                                <i class="fas fa-fingerprint text-primary"></i>
-                                            </div>
-                                            <span class="fw-bold text-dark" style="font-size: 0.88rem;">Optical Sensor Active</span>
-                                        </div>
+                                    <!-- Left: Avatar Icon Orb -->
+                                    <div id="simAvatarOrb" class="sim-avatar-orb state-armed">
+                                        <i id="simIcon" class="fas fa-lock"></i>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="vital-pill">
-                                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                                <small class="text-muted fw-bold" style="font-size: 0.72rem;">KEYPAD MATRIX</small>
-                                                <i class="fas fa-keyboard text-info"></i>
-                                            </div>
-                                            <span class="fw-bold text-dark" style="font-size: 0.88rem;">Passcode Ready</span>
+
+                                    <!-- Middle: Status Descriptions & Solenoid Status -->
+                                    <div class="flex-grow-1 ms-2">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span id="simStateLabel" class="text-uppercase fw-bold text-success" style="font-size: 0.7rem; letter-spacing: 0.8px;">
+                                                SECURE STANDBY
+                                            </span>
+                                            <span id="simDeadboltStatus" class="deadbolt-cylinder bg-dark text-success border border-success border-opacity-25">
+                                                <i class="fas fa-bolt"></i> <span>SOLENOID: ENGAGED</span>
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="vital-pill">
-                                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                                <small class="text-muted fw-bold" style="font-size: 0.72rem;">INTRUSION GUARD</small>
-                                                <i class="fas fa-bell text-danger"></i>
-                                            </div>
-                                            <span class="fw-bold text-dark" style="font-size: 0.88rem;">Siren Disarmed</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="vital-pill">
-                                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                                <small class="text-muted fw-bold" style="font-size: 0.72rem;">BACKUP POWER</small>
-                                                <i class="fas fa-battery-three-quarters text-success"></i>
-                                            </div>
-                                            <span class="fw-bold text-dark" style="font-size: 0.88rem;">100% Standby</span>
+                                        <h5 id="simActionTitle" class="fw-bold mb-1 text-white" style="font-size: 1.15rem;">
+                                            LABORATORY SECURED
+                                        </h5>
+                                        <p id="simActionDesc" class="text-white-50 small mb-0" style="font-size: 0.76rem;">
+                                            12V Fail-Secure Deadbolt Locked • Optical Sensor Standby
+                                        </p>
+
+                                        <!-- Auto-Relock Countdown Progress Bar -->
+                                        <div id="simCountdownWrap" class="progress mt-2 d-none" style="height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                                            <div id="simCountdownBar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 100%; transition: width 0.1s linear;"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Simulated Recent Audit Feed -->
-                                <div class="bg-light p-3 rounded-3 border">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <small class="fw-bold text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                                            <i class="fas fa-history text-primary me-1"></i> Recent Entry Simulation
+                                <!-- Interactive Hardware Action Deck (5 Action Keys) -->
+                                <div class="sim-btn-deck">
+                                    <button id="btnSimFingerprint" class="sim-btn-key" title="Simulate Authorized Biometric Scan">
+                                        <i class="fas fa-fingerprint text-info fs-5"></i>
+                                        <span>Scan Fingerprint</span>
+                                    </button>
+
+                                    <button id="btnSimPin" class="sim-btn-key" title="Simulate 4-Digit Keypad Passcode Entry">
+                                        <i class="fas fa-keyboard text-primary fs-5"></i>
+                                        <span>Enter PIN</span>
+                                    </button>
+
+                                    <button id="btnSimDoorbell" class="sim-btn-key" title="Simulate Doorbell Chime Push">
+                                        <i class="fas fa-bell text-warning fs-5"></i>
+                                        <span>Ring Doorbell</span>
+                                    </button>
+
+                                    <button id="btnSimTamper" class="sim-btn-key btn-tamper" title="Simulate Forced Entry / Vibration Alarm">
+                                        <i class="fas fa-radiation-alt text-danger fs-5"></i>
+                                        <span id="btnTamperLabel">Force Tamper</span>
+                                    </button>
+
+                                    <button id="btnSimReset" class="sim-btn-key" title="Reset Simulator to Clean Armed Standby">
+                                        <i class="fas fa-shield-alt text-success fs-5"></i>
+                                        <span>Reset / Re-Arm</span>
+                                    </button>
+                                </div>
+
+                                <!-- Live Hardware Telemetry Strip -->
+                                <div class="sim-vitals-row">
+                                    <div class="sim-vital-box">
+                                        <span class="sim-vital-lbl"><i class="fas fa-plug text-primary me-1"></i>Solenoid 12V</span>
+                                        <span id="telSolenoid" class="sim-vital-val text-success">ENGAGED</span>
+                                    </div>
+                                    <div class="sim-vital-box">
+                                        <span class="sim-vital-lbl"><i class="fas fa-fingerprint text-info me-1"></i>Biometrics</span>
+                                        <span id="telBiometric" class="sim-vital-val text-info">500 DPI ACTIVE</span>
+                                    </div>
+                                    <div class="sim-vital-box">
+                                        <span class="sim-vital-lbl"><i class="fas fa-hashtag text-warning me-1"></i>Passcode</span>
+                                        <span id="telPin" class="sim-vital-val text-light">4-DIGIT READY</span>
+                                    </div>
+                                    <div class="sim-vital-box">
+                                        <span class="sim-vital-lbl"><i class="fas fa-volume-up text-danger me-1"></i>Siren Alarm</span>
+                                        <span id="telAlarm" class="sim-vital-val text-muted">STANDBY</span>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Live Audit Stream -->
+                                <div class="sim-audit-console">
+                                    <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-secondary border-opacity-25">
+                                        <small class="fw-bold text-info text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">
+                                            <i class="fas fa-terminal me-1"></i> Real-Time Telemetry & Audit Stream
                                         </small>
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.68rem;">Live Log</span>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 12px;">
-                                                FP
-                                            </div>
-                                            <div>
-                                                <p class="mb-0 fw-bold text-dark small">Faculty Personnel</p>
-                                                <small class="text-muted" style="font-size: 0.7rem;">Biometric Scan • Access Granted</small>
-                                            </div>
-                                        </div>
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 fw-bold" style="font-size: 0.7rem;">
-                                            Unlocked
+                                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25" style="font-size: 0.64rem;">
+                                            <span class="spinner-grow spinner-grow-sm me-1" style="width: 5px; height: 5px;"></span> Streaming
                                         </span>
                                     </div>
+                                    <div id="simAuditFeed">
+                                        <div class="sim-audit-item text-white-50">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-25">10:42 AM</span>
+                                                <span class="text-white fw-semibold">Faculty Prof. Santos</span>
+                                                <span class="text-muted d-none d-sm-inline">• Biometric Scan Verified</span>
+                                            </div>
+                                            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25">Access Granted</span>
+                                        </div>
+                                        <div class="sim-audit-item text-white-50">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-secondary bg-opacity-20 text-secondary border border-secondary border-opacity-25">09:15 AM</span>
+                                                <span class="text-white fw-semibold">ESP8266 Hub Diagnostic</span>
+                                                <span class="text-muted d-none d-sm-inline">• Optical Lens Nominal</span>
+                                            </div>
+                                            <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25">System Armed</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Interactive Button Inside Preview -->
-                                <div class="mt-3">
-                                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold small" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                        <i class="fas fa-user-lock me-1"></i> Access Personnel Control Panel
+                                <!-- Personnel Portal Quick Link -->
+                                <div class="mt-3 text-center">
+                                    <button class="btn btn-outline-info w-100 rounded-pill py-2 fw-bold small text-white border-opacity-50" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                        <i class="fas fa-user-shield me-2 text-info"></i> Sign In to Authorized Personnel Portal <i class="fas fa-arrow-right ms-1"></i>
                                     </button>
                                 </div>
 
@@ -765,52 +1141,76 @@
             </div>
         </section>
 
-        <!-- 🟢 SYSTEM FEATURES & OBJECTIVES -->
+        <!-- 🟢 4-LAYER CYBER-PHYSICAL DEFENSE ARCHITECTURE -->
         <section id="features" class="py-5 bg-white border-top">
             <div class="container py-4 text-center">
                 
                 <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">
-                    Technical Architecture
+                    Multi-Tier Cyber-Physical Security
                 </span>
-                <h2 class="section-heading mt-2">Core System Capabilities</h2>
-                <p class="text-muted mb-5 mx-auto" style="max-width: 650px;">
-                    Replacing traditional lock-and-key vulnerabilities with an automated, tamper-resistant access ecosystem for the Department of Information Systems.
+                <h2 class="section-heading mt-2">4-Layer Integrated Defense Architecture</h2>
+                <p class="text-muted mb-5 mx-auto" style="max-width: 680px;">
+                    Engineered to replace vulnerable physical keys with an automated, tamper-resistant access ecosystem combining hardware robotics and cryptographic web defense.
                 </p>
 
                 <div class="row g-4 text-start">
                     
-                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="feature-card shadow-sm">
-                            <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                    <!-- Layer 1 -->
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="defense-layer-card shadow-sm">
+                            <span class="defense-layer-num">01</span>
+                            <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary mb-3">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-bold mb-2" style="font-size: 0.7rem;">Physical Layer</span>
+                            <h5 class="fw-bold mb-2 text-dark">12V Solenoid Deadbolt</h5>
+                            <p class="text-muted small mb-0 lh-base">
+                                Fail-secure electromagnetic lock with heavy-duty holding force. Magnetic reed switch sensors instantly detect door opening and automatically re-engage upon closing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Layer 2 -->
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="defense-layer-card shadow-sm">
+                            <span class="defense-layer-num">02</span>
+                            <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success mb-3">
                                 <i class="fas fa-fingerprint"></i>
                             </div>
-                            <h5 class="fw-bold mb-3 text-dark">Biometric Automation</h5>
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-bold mb-2" style="font-size: 0.7rem;">Biometric Layer</span>
+                            <h5 class="fw-bold mb-2 text-dark">500 DPI Optical Sensor</h5>
                             <p class="text-muted small mb-0 lh-base">
-                                High-speed fingerprint matching with automated magnetic lock actuation. When personnel close the door, deadbolt sensors automatically re-secure the room.
+                                High-precision optical prism comparison in &lt; 0.8s with false-acceptance rate &lt; 0.001%. Local secure flash template storage prevents biometric spoofing attacks.
                             </p>
                         </div>
                     </div>
 
-                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="feature-card shadow-sm">
-                            <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success">
-                                <i class="fas fa-clipboard-list"></i>
+                    <!-- Layer 3 -->
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="defense-layer-card shadow-sm">
+                            <span class="defense-layer-num">03</span>
+                            <div class="stat-icon-wrapper bg-info bg-opacity-10 text-info mb-3">
+                                <i class="fas fa-key"></i>
                             </div>
-                            <h5 class="fw-bold mb-3 text-dark">Real-Time Audit Trail</h5>
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1 fw-bold mb-2" style="font-size: 0.7rem;">Identity Layer</span>
+                            <h5 class="fw-bold mb-2 text-dark">FIDO2 WebAuthn Passkeys</h5>
                             <p class="text-muted small mb-0 lh-base">
-                                Every door interaction records the precise timestamp, authenticated personnel identity, and action method. Fully exportable for institutional reports.
+                                Zero-password cryptographic authentication for Dean, Faculty, and Admin portals using device-bound biometric sensors (Touch ID, Windows Hello, Face ID).
                             </p>
                         </div>
                     </div>
 
-                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                        <div class="feature-card shadow-sm">
-                            <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
-                                <i class="fas fa-bell"></i>
+                    <!-- Layer 4 -->
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="defense-layer-card shadow-sm">
+                            <span class="defense-layer-num">04</span>
+                            <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger mb-3">
+                                <i class="fas fa-satellite-dish"></i>
                             </div>
-                            <h5 class="fw-bold mb-3 text-dark">Intrusion & Threat Defense</h5>
+                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-bold mb-2" style="font-size: 0.7rem;">Telemetry Layer</span>
+                            <h5 class="fw-bold mb-2 text-dark">Telemetry & Web Push</h5>
                             <p class="text-muted small mb-0 lh-base">
-                                Detects forced door entry, unrecognized fingerprint attempts, or tamper events. Instantly triggers local audible sirens and cloud-synced alerts.
+                                NodeMCU ESP8266 continuous heartbeat telemetry. Immediately broadcasts tamper vibration alerts, doorbell chimes, and audit trails directly via Web Push.
                             </p>
                         </div>
                     </div>
@@ -1307,6 +1707,479 @@
                 console.log('Network Error or Offline mode:', err);
             });
         });
+    </script>
+
+    <!-- 🟢 INTERACTIVE LIVE LABORATORY SIMULATOR ENGINE (OPTION 3) -->
+    <script>
+        (function() {
+            // 1. Audio Synthesizer & Audio Asset Engine
+            class SimulatorAudioEngine {
+                constructor() {
+                    this.ctx = null;
+                    this.muted = false;
+                    this.unlockAudio = new Audio('{{ asset("assets/sounds/notification.mp3") }}');
+                    this.alarmAudio = new Audio('{{ asset("assets/sounds/alarm.mp3") }}');
+                    this.alarmAudio.loop = true;
+                }
+
+                init() {
+                    if (!this.ctx) {
+                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                        if (AudioCtx) this.ctx = new AudioCtx();
+                    }
+                    if (this.ctx && this.ctx.state === 'suspended') {
+                        this.ctx.resume();
+                    }
+                }
+
+                toggleMute() {
+                    this.muted = !this.muted;
+                    if (this.muted) {
+                        this.stopAlarm();
+                    }
+                    return this.muted;
+                }
+
+                playTone(freq, type, duration, delay = 0, gainVal = 0.1) {
+                    if (this.muted) return;
+                    this.init();
+                    if (!this.ctx) return;
+
+                    setTimeout(() => {
+                        try {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = type;
+                            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                            gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start();
+                            osc.stop(this.ctx.currentTime + duration);
+                        } catch(e) {}
+                    }, delay);
+                }
+
+                playScanBeep() {
+                    if (this.muted) return;
+                    this.playTone(880, 'sine', 0.08, 0, 0.12);
+                    this.playTone(1320, 'sine', 0.12, 100, 0.12);
+                }
+
+                playKeypadBeep() {
+                    if (this.muted) return;
+                    this.playTone(941, 'triangle', 0.06, 0, 0.15);
+                }
+
+                playUnlockChime() {
+                    if (this.muted) return;
+                    try {
+                        this.unlockAudio.currentTime = 0;
+                        const p = this.unlockAudio.play();
+                        if (p && p.catch) {
+                            p.catch(() => {
+                                // Synthesizer musical chime fallback (C5 -> E5 -> G5 -> C6)
+                                this.playTone(523.25, 'sine', 0.14, 0, 0.12);
+                                this.playTone(659.25, 'sine', 0.14, 110, 0.12);
+                                this.playTone(783.99, 'sine', 0.18, 220, 0.12);
+                                this.playTone(1046.50, 'sine', 0.28, 330, 0.15);
+                            });
+                        }
+                    } catch(e) {}
+                }
+
+                playDoorbell() {
+                    if (this.muted) return;
+                    try {
+                        this.unlockAudio.currentTime = 0;
+                        const p = this.unlockAudio.play();
+                        if (p && p.catch) {
+                            p.catch(() => {
+                                // Ding-dong chime (E5 -> C5)
+                                this.playTone(659.25, 'sine', 0.28, 0, 0.18);
+                                this.playTone(523.25, 'sine', 0.45, 260, 0.18);
+                            });
+                        }
+                    } catch(e) {}
+                }
+
+                playAlarmSiren() {
+                    if (this.muted) return;
+                    try {
+                        this.alarmAudio.currentTime = 0;
+                        const p = this.alarmAudio.play();
+                        if (p && p.catch) {
+                            p.catch(() => {
+                                // Synthesizer siren oscillations fallback
+                                this.playTone(480, 'sawtooth', 0.25, 0, 0.12);
+                                this.playTone(850, 'sawtooth', 0.25, 250, 0.12);
+                                this.playTone(480, 'sawtooth', 0.25, 500, 0.12);
+                                this.playTone(850, 'sawtooth', 0.25, 750, 0.12);
+                            });
+                        }
+                    } catch(e) {}
+                }
+
+                stopAlarm() {
+                    try {
+                        this.alarmAudio.pause();
+                        this.alarmAudio.currentTime = 0;
+                    } catch(e) {}
+                }
+
+                playMechanicalClick() {
+                    if (this.muted) return;
+                    this.playTone(180, 'triangle', 0.06, 0, 0.15);
+                    this.playTone(90, 'sine', 0.10, 50, 0.2);
+                }
+            }
+
+            const audio = new SimulatorAudioEngine();
+
+            // 2. DOM Elements Cache
+            const dom = {
+                soundToggle: document.getElementById('simSoundToggle'),
+                soundIcon: document.getElementById('simSoundIcon'),
+                soundLabel: document.getElementById('simSoundLabel'),
+                visualCore: document.getElementById('simVisualCore'),
+                avatarOrb: document.getElementById('simAvatarOrb'),
+                simIcon: document.getElementById('simIcon'),
+                stateBadge: document.getElementById('simStateBadge'),
+                stateLabel: document.getElementById('simStateLabel'),
+                deadboltStatus: document.getElementById('simDeadboltStatus'),
+                actionTitle: document.getElementById('simActionTitle'),
+                actionDesc: document.getElementById('simActionDesc'),
+                countdownWrap: document.getElementById('simCountdownWrap'),
+                countdownBar: document.getElementById('simCountdownBar'),
+                btnFp: document.getElementById('btnSimFingerprint'),
+                btnPin: document.getElementById('btnSimPin'),
+                btnBell: document.getElementById('btnSimDoorbell'),
+                btnTamper: document.getElementById('btnSimTamper'),
+                btnTamperLabel: document.getElementById('btnTamperLabel'),
+                btnReset: document.getElementById('btnSimReset'),
+                telSolenoid: document.getElementById('telSolenoid'),
+                telBiometric: document.getElementById('telBiometric'),
+                telPin: document.getElementById('telPin'),
+                telAlarm: document.getElementById('telAlarm'),
+                auditFeed: document.getElementById('simAuditFeed')
+            };
+
+            if (!dom.visualCore) return;
+
+            let currentState = 'ARMED'; // 'ARMED', 'SCANNING', 'UNLOCKED', 'ALARM', 'DOORBELL'
+            let activeTimer = null;
+            let countdownInterval = null;
+
+            // 3. Audio Toggle
+            if (dom.soundToggle) {
+                dom.soundToggle.addEventListener('click', function() {
+                    const isMuted = audio.toggleMute();
+                    if (isMuted) {
+                        dom.soundIcon.className = 'fas fa-volume-mute text-secondary';
+                        dom.soundLabel.textContent = 'Muted';
+                        dom.soundToggle.style.opacity = '0.7';
+                    } else {
+                        dom.soundIcon.className = 'fas fa-volume-up text-info';
+                        dom.soundLabel.textContent = 'Audio: ON';
+                        dom.soundToggle.style.opacity = '1';
+                    }
+                });
+            }
+
+            // 4. Audit Log Helper
+            function addAuditLog(title, subtitle, badgeClass, badgeText) {
+                if (!dom.auditFeed) return;
+                const now = new Date();
+                let timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                const item = document.createElement('div');
+                item.className = 'sim-audit-item text-white-50';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-secondary bg-opacity-25 text-white-50 border border-white border-opacity-10">${timeStr}</span>
+                        <span class="text-white fw-semibold">${title}</span>
+                        <span class="text-muted d-none d-sm-inline">• ${subtitle}</span>
+                    </div>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                `;
+
+                dom.auditFeed.insertBefore(item, dom.auditFeed.firstChild);
+
+                // Keep stream clean (max 6 items)
+                while (dom.auditFeed.children.length > 6) {
+                    dom.auditFeed.removeChild(dom.auditFeed.lastChild);
+                }
+            }
+
+            function clearAllTimers() {
+                if (activeTimer) clearTimeout(activeTimer);
+                if (countdownInterval) clearInterval(countdownInterval);
+                dom.visualCore.classList.remove('is-scanning');
+                if (dom.countdownWrap) dom.countdownWrap.classList.add('d-none');
+            }
+
+            // 5. Reset to Armed Standby
+            function resetToArmed(silent = false) {
+                clearAllTimers();
+                currentState = 'ARMED';
+                audio.stopAlarm();
+                if (!silent) audio.playMechanicalClick();
+
+                // Core Visuals
+                dom.visualCore.className = 'sim-visual-core state-armed';
+                dom.avatarOrb.className = 'sim-avatar-orb state-armed';
+                dom.simIcon.className = 'fas fa-lock';
+
+                // Badges & Labels
+                dom.stateBadge.className = 'badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-1 rounded-pill fw-bold';
+                dom.stateBadge.innerHTML = '<i class="fas fa-shield-alt me-1"></i> ARMED & LOCKED';
+
+                dom.stateLabel.className = 'text-uppercase fw-bold text-success';
+                dom.stateLabel.textContent = 'SECURE STANDBY';
+
+                dom.deadboltStatus.className = 'deadbolt-cylinder bg-dark text-success border border-success border-opacity-25';
+                dom.deadboltStatus.innerHTML = '<i class="fas fa-bolt"></i> <span>SOLENOID: ENGAGED</span>';
+
+                dom.actionTitle.textContent = 'LABORATORY SECURED';
+                dom.actionDesc.textContent = '12V Fail-Secure Deadbolt Locked • Optical Sensor Standby';
+
+                if (dom.btnTamperLabel) dom.btnTamperLabel.textContent = 'Force Tamper';
+
+                // Telemetry
+                dom.telSolenoid.textContent = 'ENGAGED';
+                dom.telSolenoid.className = 'sim-vital-val text-success';
+
+                dom.telBiometric.textContent = '500 DPI ACTIVE';
+                dom.telBiometric.className = 'sim-vital-val text-info';
+
+                dom.telPin.textContent = '4-DIGIT READY';
+                dom.telPin.className = 'sim-vital-val text-light';
+
+                dom.telAlarm.textContent = 'STANDBY';
+                dom.telAlarm.className = 'sim-vital-val text-muted';
+            }
+
+            // 6. Action 1: Fingerprint Scan Simulation
+            function simulateFingerprint() {
+                clearAllTimers();
+                audio.stopAlarm();
+                currentState = 'SCANNING';
+
+                // Visual Scanning State
+                dom.visualCore.className = 'sim-visual-core state-scanning is-scanning';
+                dom.avatarOrb.className = 'sim-avatar-orb state-scanning';
+                dom.simIcon.className = 'fas fa-fingerprint';
+
+                dom.stateBadge.className = 'badge bg-info-subtle text-info border border-info border-opacity-25 px-3 py-1 rounded-pill fw-bold';
+                dom.stateBadge.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> SCANNING...';
+
+                dom.stateLabel.className = 'text-uppercase fw-bold text-info';
+                dom.stateLabel.textContent = 'BIOMETRIC SCAN';
+
+                dom.actionTitle.textContent = 'SCANNING FINGERPRINT...';
+                dom.actionDesc.textContent = 'Optical prism active • Matching minutiae points against flash memory';
+
+                dom.telBiometric.textContent = 'MATCHING...';
+                dom.telBiometric.className = 'sim-vital-val text-warning';
+
+                audio.playScanBeep();
+
+                // Match Success after 750ms
+                activeTimer = setTimeout(() => {
+                    currentState = 'UNLOCKED';
+                    dom.visualCore.classList.remove('is-scanning');
+                    dom.visualCore.className = 'sim-visual-core state-unlocked';
+                    dom.avatarOrb.className = 'sim-avatar-orb state-unlocked';
+                    dom.simIcon.className = 'fas fa-lock-open';
+
+                    dom.stateBadge.className = 'badge bg-info text-dark px-3 py-1 rounded-pill fw-bold shadow-sm';
+                    dom.stateBadge.innerHTML = '<i class="fas fa-lock-open me-1"></i> UNLOCKED';
+
+                    dom.stateLabel.className = 'text-uppercase fw-bold text-info';
+                    dom.stateLabel.textContent = 'ACCESS GRANTED';
+
+                    dom.deadboltStatus.className = 'deadbolt-cylinder bg-dark text-info border border-info border-opacity-25';
+                    dom.deadboltStatus.innerHTML = '<i class="fas fa-bolt"></i> <span>SOLENOID: RELEASED</span>';
+
+                    dom.actionTitle.textContent = 'ACCESS GRANTED: PROF. SANTOS';
+                    dom.actionDesc.textContent = 'BSIS Faculty Verified • Actuating 12V Solenoid • Auto-relock armed';
+
+                    dom.telSolenoid.textContent = 'RELEASED (12V)';
+                    dom.telSolenoid.className = 'sim-vital-val text-info';
+
+                    dom.telBiometric.textContent = 'MATCH #04 (99.2%)';
+                    dom.telBiometric.className = 'sim-vital-val text-success';
+
+                    audio.playUnlockChime();
+                    addAuditLog('Faculty Prof. Santos', 'Biometric Scan Verified • Room 101 Unlocked', 'bg-success bg-opacity-20 text-success border border-success border-opacity-25', 'Access Granted');
+
+                    // Start 5-Second Auto-Relock Countdown
+                    startRelockCountdown(5000);
+                }, 750);
+            }
+
+            // 7. Action 2: Keypad PIN Simulation
+            function simulatePin() {
+                clearAllTimers();
+                audio.stopAlarm();
+                currentState = 'PIN';
+
+                dom.visualCore.className = 'sim-visual-core state-scanning';
+                dom.avatarOrb.className = 'sim-avatar-orb state-scanning';
+                dom.simIcon.className = 'fas fa-keyboard';
+
+                dom.stateBadge.className = 'badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill fw-bold';
+                dom.stateBadge.innerHTML = '<i class="fas fa-calculator me-1"></i> ENTERING PIN';
+
+                dom.stateLabel.className = 'text-uppercase fw-bold text-primary';
+                dom.stateLabel.textContent = 'KEYPAD AUTHENTICATION';
+
+                dom.actionTitle.textContent = 'PIN: [ ● ● ● ● ]';
+                dom.actionDesc.textContent = 'Verifying 4-digit room entry passcode for BSIS Room 101...';
+
+                dom.telPin.textContent = 'VERIFYING...';
+                dom.telPin.className = 'sim-vital-val text-warning';
+
+                // Play rapid keystroke beeps
+                audio.playKeypadBeep();
+                setTimeout(() => audio.playKeypadBeep(), 100);
+                setTimeout(() => audio.playKeypadBeep(), 200);
+                setTimeout(() => audio.playKeypadBeep(), 300);
+
+                activeTimer = setTimeout(() => {
+                    currentState = 'UNLOCKED';
+                    dom.visualCore.className = 'sim-visual-core state-unlocked';
+                    dom.avatarOrb.className = 'sim-avatar-orb state-unlocked';
+                    dom.simIcon.className = 'fas fa-door-open';
+
+                    dom.stateBadge.className = 'badge bg-info text-dark px-3 py-1 rounded-pill fw-bold shadow-sm';
+                    dom.stateBadge.innerHTML = '<i class="fas fa-lock-open me-1"></i> UNLOCKED';
+
+                    dom.stateLabel.className = 'text-uppercase fw-bold text-info';
+                    dom.stateLabel.textContent = 'PIN VERIFIED';
+
+                    dom.deadboltStatus.className = 'deadbolt-cylinder bg-dark text-info border border-info border-opacity-25';
+                    dom.deadboltStatus.innerHTML = '<i class="fas fa-bolt"></i> <span>SOLENOID: RELEASED</span>';
+
+                    dom.actionTitle.textContent = 'ACCESS GRANTED: ROOM PASSCODE';
+                    dom.actionDesc.textContent = 'Authorized 4-Digit Matrix Keypad Entry • Solenoid Power Disengaged';
+
+                    dom.telSolenoid.textContent = 'RELEASED (12V)';
+                    dom.telSolenoid.className = 'sim-vital-val text-info';
+
+                    dom.telPin.textContent = 'AUTHENTICATED';
+                    dom.telPin.className = 'sim-vital-val text-success';
+
+                    audio.playUnlockChime();
+                    addAuditLog('Keypad Passcode', 'Room 101 PIN Verified • Solenoid Actuated', 'bg-info bg-opacity-20 text-info border border-info border-opacity-25', 'Passcode OK');
+
+                    startRelockCountdown(5000);
+                }, 600);
+            }
+
+            // 8. Action 3: Doorbell Chime Simulation
+            function simulateDoorbell() {
+                if (currentState === 'ALARM') return;
+                audio.playDoorbell();
+
+                dom.stateBadge.className = 'badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold shadow-sm';
+                dom.stateBadge.innerHTML = '<i class="fas fa-bell me-1"></i> DOORBELL CHIME';
+
+                dom.stateLabel.className = 'text-uppercase fw-bold text-warning';
+                dom.stateLabel.textContent = 'VISITOR AT DOOR';
+
+                dom.actionTitle.textContent = '🔔 DOORBELL CHIME BROADCAST';
+                dom.actionDesc.textContent = 'Visitor pressed external push-button • Push notification dispatched';
+
+                addAuditLog('Doorbell Push-Button', 'Visitor at Room 101 • Push Notification Alert Sent', 'bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25', 'Doorbell Rang');
+
+                setTimeout(() => {
+                    if (currentState === 'ARMED') {
+                        resetToArmed(true);
+                    }
+                }, 3000);
+            }
+
+            // 9. Action 4: Tamper / Forced Entry Alarm Simulation
+            function simulateTamper() {
+                if (currentState === 'ALARM') {
+                    // Clicking again silences siren
+                    resetToArmed();
+                    addAuditLog('Security Admin', 'Alarm Silenced & Sensor Reset to Standby', 'bg-success bg-opacity-20 text-success border border-success border-opacity-25', 'Silenced');
+                    return;
+                }
+
+                clearAllTimers();
+                currentState = 'ALARM';
+
+                dom.visualCore.className = 'sim-visual-core state-alarm';
+                dom.avatarOrb.className = 'sim-avatar-orb state-alarm';
+                dom.simIcon.className = 'fas fa-radiation-alt text-danger';
+
+                dom.stateBadge.className = 'badge bg-danger text-white px-3 py-1 rounded-pill fw-bold shadow-sm';
+                dom.stateBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> CRITICAL ALARM';
+
+                dom.stateLabel.className = 'text-uppercase fw-bold text-danger';
+                dom.stateLabel.textContent = 'SECURITY BREACH DETECTED';
+
+                dom.deadboltStatus.className = 'deadbolt-cylinder bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50';
+                dom.deadboltStatus.innerHTML = '<i class="fas fa-lock"></i> <span>FAIL-SECURE LOCKDOWN</span>';
+
+                dom.actionTitle.textContent = '🚨 FORCED ENTRY / TAMPER ALERT!';
+                dom.actionDesc.textContent = 'Vibration / door breach sensor tripped • 105dB local siren active • Web Push alert dispatched';
+
+                if (dom.btnTamperLabel) dom.btnTamperLabel.textContent = 'Silence Siren';
+
+                dom.telSolenoid.textContent = 'LOCKDOWN';
+                dom.telSolenoid.className = 'sim-vital-val text-danger';
+
+                dom.telAlarm.textContent = 'ACTIVE (105dB)';
+                dom.telAlarm.className = 'sim-vital-val text-danger fw-bold';
+
+                audio.playAlarmSiren();
+                addAuditLog('SECURITY BREACH', 'Forced Tamper Vibration Tripped • 105dB Siren Active', 'bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50', 'Alarm Fired');
+            }
+
+            // 10. Auto-Relock Countdown
+            function startRelockCountdown(ms) {
+                if (!dom.countdownWrap || !dom.countdownBar) return;
+                dom.countdownWrap.classList.remove('d-none');
+                dom.countdownBar.style.width = '100%';
+
+                const startTime = Date.now();
+                countdownInterval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const remainingPercent = Math.max(0, 100 - (elapsed / ms) * 100);
+                    dom.countdownBar.style.width = remainingPercent + '%';
+
+                    if (elapsed >= ms) {
+                        clearInterval(countdownInterval);
+                        dom.countdownWrap.classList.add('d-none');
+                        resetToArmed();
+                        addAuditLog('Magnetic Reed Switch', 'Door Closed • Solenoid Re-Armed • Room Secured', 'bg-success bg-opacity-20 text-success border border-success border-opacity-25', 'Re-Locked');
+                    }
+                }, 50);
+            }
+
+            // 11. Event Listeners
+            if (dom.btnFp) dom.btnFp.addEventListener('click', simulateFingerprint);
+            if (dom.btnPin) dom.btnPin.addEventListener('click', simulatePin);
+            if (dom.btnBell) dom.btnBell.addEventListener('click', simulateDoorbell);
+            if (dom.btnTamper) dom.btnTamper.addEventListener('click', simulateTamper);
+            if (dom.btnReset) dom.btnReset.addEventListener('click', () => {
+                resetToArmed();
+                addAuditLog('System Diagnostics', 'Manual Operator Reset • All Peripherals Nominal', 'bg-info bg-opacity-20 text-info border border-info border-opacity-25', 'Re-Armed');
+            });
+
+            // 12. Idle Heartbeat (every 30s)
+            setInterval(() => {
+                if (currentState === 'ARMED' && Math.random() > 0.4) {
+                    addAuditLog('ESP8266 Live Node', 'Telemetry Ping Nominal • WiFi: -58 dBm • Solenoid: HIGH', 'bg-secondary bg-opacity-20 text-white-50 border border-secondary border-opacity-25', 'Heartbeat OK');
+                }
+            }, 30000);
+
+        })();
     </script>
 </body>
 </html>
