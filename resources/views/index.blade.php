@@ -1484,6 +1484,12 @@
                             </div>
                         @endif
 
+                        @if(session('error'))
+                            <div class="alert alert-danger small py-2 rounded-3 border-0 bg-danger bg-opacity-10 text-danger fw-bold shadow-sm">
+                                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                            </div>
+                        @endif
+
                         @if($errors->any())
                             <div class="alert alert-danger small py-2 rounded-3 border-0 bg-danger bg-opacity-10 text-danger fw-bold shadow-sm">
                                 <i class="fas fa-exclamation-circle me-2"></i> {{ $errors->first() }}
@@ -1606,6 +1612,18 @@
                         @if(session('success') && str_contains(session('success'), 'requested'))
                             <div class="alert alert-success small py-2 rounded-3 border-0 bg-success bg-opacity-10 text-success fw-bold shadow-sm">
                                 <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if(session('error') && old('name'))
+                            <div class="alert alert-danger small py-2 rounded-3 border-0 bg-danger bg-opacity-10 text-danger fw-bold shadow-sm mb-3">
+                                <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if($errors->any() && (old('name') || $errors->has('name') || $errors->has('password_confirmation')))
+                            <div class="alert alert-danger small py-2 rounded-3 border-0 bg-danger bg-opacity-10 text-danger fw-bold shadow-sm mb-3">
+                                <i class="fas fa-exclamation-circle me-2"></i> {{ $errors->first() }}
                             </div>
                         @endif
 
@@ -1890,9 +1908,24 @@
                 @endif
             @endif
 
+            @if(session('error'))
+                @if(old('name'))
+                    var myModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                    myModal.show();
+                @else
+                    var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    myModal.show();
+                @endif
+            @endif
+
             @if($errors->any())
-                var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                myModal.show();
+                @if(old('name') || $errors->has('name') || $errors->has('password_confirmation'))
+                    var myModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                    myModal.show();
+                @else
+                    var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    myModal.show();
+                @endif
             @endif
         });
     </script>

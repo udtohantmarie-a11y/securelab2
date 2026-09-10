@@ -15,10 +15,18 @@ $app = Application::configure(basePath: dirname(__DIR__))
         // 🟢 MAGTIWALA SA NGROK
         $middleware->trustProxies(at: '*');
 
-        // 🔴 ULTIMATE BYPASS: I-exempt ang login at logout sa 419 Error
+        // 🔴 ULTIMATE BYPASS: I-exempt ang lahat ng authentication at public form routes sa 419 Error
         $middleware->validateCsrfTokens(except: [
             'login',
+            'login/*',
             'logout',
+            'register',
+            'verify-otp',
+            'resend-otp',
+            'forgot-password',
+            'reset-password',
+            'clear-cache',
+            'api/*',
         ]);
 
         $middleware->web(append: [
@@ -30,7 +38,12 @@ $app = Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // 🟢 CATCH AT I-REDIRECT ANG ANUMANG TOKEN MISMATCH PARA WALANG 419 ERROR SCREEN
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            return redirect()->back()
+                ->withInput($request->except('_token', 'password', 'password_confirmation'))
+                ->with('error', 'Session expired. Please try submitting again.');
+        });
     })->create();
 
 // 🟢 Pre-set application namespace so Laravel never searches for composer.json at runtime
