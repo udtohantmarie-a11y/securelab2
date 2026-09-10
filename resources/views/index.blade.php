@@ -33,23 +33,33 @@
             --text-muted: #64748b;
         }
 
+        html {
+            overflow-x: hidden !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
         body { 
             background-color: var(--surface-bg); 
             font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif; 
             color: var(--text-main);
             scroll-behavior: smooth; 
-            overflow-x: hidden;
+            overflow-x: hidden !important;
+            width: 100% !important;
+            max-width: 100% !important;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            position: relative;
         }
 
         /* 🟢 DYNAMIC BACKGROUND GLOW */
         .bg-animation-container {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             overflow: hidden;
+            pointer-events: none;
             background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
         }
 
@@ -59,6 +69,9 @@
             filter: blur(120px);
             opacity: 0.22;
             animation: floatOrb 22s infinite alternate ease-in-out;
+            pointer-events: none;
+            max-width: 90vw;
+            max-height: 90vw;
         }
 
         .orb-1 { width: 500px; height: 500px; background: #0d6efd; top: -120px; left: -100px; animation-delay: 0s; }
@@ -150,17 +163,92 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* 🟢 MOBILE RESPONSIVE GUARDS */
         @media (max-width: 991px) {
+            /* Prevent AOS transforms from causing horizontal overflow */
+            [data-aos] {
+                transform: none !important;
+                opacity: 1 !important;
+                transition: none !important;
+            }
             .hero-title { font-size: 2.25rem; }
-            .hero-section { padding: 40px 0 45px; }
+            .hero-section { padding: 35px 0 40px; }
+
+            /* Modern Mobile Navbar Drawer Card */
+            .navbar-collapse {
+                background: #ffffff;
+                border-radius: 20px;
+                padding: 16px 18px;
+                margin-top: 12px;
+                box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+                border: 1px solid rgba(226, 232, 240, 0.9);
+            }
+            .navbar-nav {
+                width: 100%;
+                text-align: left;
+                align-items: flex-start !important;
+            }
+            .navbar-nav .nav-item {
+                width: 100%;
+            }
+            .navbar-nav .nav-link {
+                width: 100%;
+                padding: 10px 14px !important;
+                border-radius: 10px;
+            }
+            .navbar-portal-actions {
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 8px !important;
+                margin-top: 12px !important;
+            }
+            .navbar-portal-actions .btn {
+                width: 100% !important;
+                justify-content: center;
+                padding: 12px !important;
+            }
         }
+
         @media (max-width: 576px) {
+            .navbar-brand img {
+                width: 32px;
+                height: 32px;
+            }
+            .navbar-brand-title {
+                font-size: 0.98rem !important;
+            }
+            .navbar-brand-subtitle {
+                font-size: 0.62rem !important;
+            }
             .hero-title { font-size: 1.85rem !important; line-height: 1.25; }
             .hero-section { padding: 25px 0 35px; }
-            .hero-badge-pill { font-size: 0.72rem; padding: 4px 12px; }
-            .section-heading { font-size: 1.7rem !important; }
-            .persona-card, .feature-card, .defense-layer-card { padding: 22px 18px !important; }
+            .hero-badge-pill { font-size: 0.72rem; padding: 5px 12px; white-space: normal; text-align: center; }
+            
+            .hero-action-btns {
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 10px !important;
+            }
+            .hero-action-btns .btn {
+                width: 100% !important;
+                text-align: center;
+                justify-content: center;
+                padding: 14px 20px !important;
+                font-size: 0.95rem !important;
+            }
+
+            .trust-markers {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+            }
+
+            .section-heading { font-size: 1.65rem !important; }
+            .persona-card, .feature-card, .defense-layer-card { padding: 20px 16px !important; }
+            .stat-card { padding: 16px 10px !important; }
+            .stat-number { font-size: 1.6rem !important; }
             .modal-content { border-radius: 20px !important; }
+            .modal-dialog { margin: 12px auto; max-width: 95vw !important; }
         }
 
         /* 🟢 LIVE HARDWARE SHOWCASE CARD */
@@ -783,8 +871,8 @@
                 <img src="{{ asset('assets/img/tpc-logo.jpg') }}" alt="TPC Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=TPC&background=fff&color=007613'">
                 <img src="{{ asset('assets/img/bsis-logo.jpg') }}" alt="BSIS Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=BSIS&background=0d6efd&color=fff'">
                 <div class="ms-1 d-flex flex-column">
-                    <span class="fw-bold text-dark" style="font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.3px;">SECURELAB</span>
-                    <small class="text-muted fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">BSIS COMPUTER LABORATORY</small>
+                    <span class="fw-bold text-dark navbar-brand-title" style="font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.3px;">SECURELAB</span>
+                    <small class="text-muted fw-semibold navbar-brand-subtitle" style="font-size: 0.72rem; letter-spacing: 0.5px;">BSIS COMPUTER LABORATORY</small>
                 </div>
             </a>
 
@@ -800,7 +888,7 @@
                 </ul>
 
                 <!-- 🟢 INCLUSIVE PORTAL ACTIONS (Dean, Faculty, Staff & Admin) -->
-                <div class="d-flex align-items-center gap-2 ms-lg-3 mt-2 mt-lg-0">
+                <div class="d-flex align-items-center gap-2 ms-lg-3 mt-2 mt-lg-0 navbar-portal-actions">
                     <button class="btn btn-portal-secondary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#registerModal">
                         <i class="fas fa-user-plus me-1 text-muted"></i>Request Access
                     </button>
@@ -818,7 +906,7 @@
         <!-- 🟢 HERO SECTION: 2-COLUMN MODERN PRESENTATION -->
         <header class="hero-section">
             <div class="container">
-                <div class="row align-items-center g-5">
+                <div class="row align-items-center g-4 g-lg-5">
                     
                     <!-- Left Hero Content -->
                     <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
@@ -831,14 +919,14 @@
 
                         <!-- Main Title -->
                         <h1 class="hero-title mb-3">
-                            Smart Biometric <br>
-                            <span class="highlight-text">Access & Security</span> <br>
+                            Smart Biometric <br class="d-none d-md-inline">
+                            <span class="highlight-text">Access & Security</span> <br class="d-none d-md-inline">
                             Laboratory Portal
                         </h1>
 
                         <!-- Interactive Sandbox Indicator -->
-                        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-3 shadow-sm" style="background: rgba(13, 110, 253, 0.08); border: 1.5px dashed rgba(13, 110, 253, 0.35);">
-                            <span class="spinner-grow spinner-grow-sm text-primary" style="width: 8px; height: 8px;"></span>
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 rounded-sm-pill mb-3 shadow-sm text-wrap" style="max-width: 100%; background: rgba(13, 110, 253, 0.08); border: 1.5px dashed rgba(13, 110, 253, 0.35);">
+                            <span class="spinner-grow spinner-grow-sm text-primary flex-shrink-0" style="width: 8px; height: 8px;"></span>
                             <span class="small fw-bold text-primary">Interactive IoT Sandbox: Test hardware actions on the simulator! 👉</span>
                         </div>
 
@@ -863,7 +951,7 @@
                         </div>
 
                         <!-- CTA Actions -->
-                        <div class="d-flex flex-wrap gap-3">
+                        <div class="d-flex flex-wrap gap-3 hero-action-btns">
                             <button class="btn btn-portal-primary px-4 py-3" data-bs-toggle="modal" data-bs-target="#loginModal">
                                 <i class="fas fa-sign-in-alt me-2"></i>Sign In to Portal
                             </button>
@@ -876,7 +964,7 @@
                         </div>
 
                         <!-- Trust Markers -->
-                        <div class="d-flex align-items-center gap-4 mt-4 pt-2 text-muted small fw-semibold">
+                        <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 mt-4 pt-2 text-muted small fw-semibold trust-markers">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fas fa-check-circle text-success fs-6"></i>
                                 <span>500 DPI Biometrics</span>
@@ -900,7 +988,7 @@
                             <!-- HUD Top Bar -->
                             <div class="sim-hud-header d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                         <span class="sim-node-badge">
                                             <i class="fas fa-microchip"></i> ESP8266 Live Node
                                         </span>
@@ -935,7 +1023,7 @@
 
                                     <!-- Middle: Status Descriptions & Solenoid Status -->
                                     <div class="flex-grow-1 ms-2">
-                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                             <span id="simStateLabel" class="text-uppercase fw-bold text-success" style="font-size: 0.7rem; letter-spacing: 0.8px;">
                                                 SECURE STANDBY
                                             </span>
@@ -1587,7 +1675,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true, offset: 50 });
+        AOS.init({ duration: 800, once: true, offset: 20, disable: 'mobile' });
 
         window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
