@@ -15,6 +15,30 @@
         /* ====================================================
            SCREEN VIEW STYLES (Modern Executive Security Theme)
            ==================================================== */
+        .threat-kpi-card {
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .threat-kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+        }
+        .pulse-dot-red {
+            display: inline-block; 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background: #ef4444;
+            box-shadow: 0 0 0 rgba(239, 68, 68, 0.4); 
+            animation: pulse-red-kpi 2s infinite;
+        }
+        @keyframes pulse-red-kpi { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
         .alert-card-executive {
             border-radius: 22px;
             border: 1px solid var(--border-color);
@@ -442,6 +466,13 @@
             {{-- 🟢 RESPONSIVE FIX: flex-column on mobile, flex-row on desktop --}}
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1 rounded-2 fw-bold" style="font-size: 10.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-shield-virus me-1"></i> THREAT INTELLIGENCE FEED
+                        </span>
+                        <span class="text-muted small">•</span>
+                        <span class="text-muted small fw-medium">Live Audit Log</span>
+                    </div>
                     <h4 class="fw-bold mb-1" style="color: var(--text-main); letter-spacing: -0.5px;">
                         Security Incident & Intrusion Alerts
                         <span id="syncing-alert" class="ms-2 badge rounded-pill fw-bold" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="window.location.reload();">
@@ -459,11 +490,69 @@
                 </div>
             </div>
 
+            <!-- 🟢 THREAT INTELLIGENCE SUMMARY STRIP -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="threat-kpi-card p-3 h-100" style="border-top: 3.5px solid #3b82f6;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Total Incidents</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 34px; height: 34px; background: rgba(59, 130, 246, 0.12); font-size: 13px;">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $allAlerts->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">All logged alerts</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    @php $activeCount = $allAlerts->where('is_resolved', 0)->count(); @endphp
+                    <div class="threat-kpi-card p-3 h-100" style="border-top: 3.5px solid #ef4444;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-danger text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Active Threats</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-danger" style="width: 34px; height: 34px; background: rgba(239, 68, 68, 0.12); font-size: 13px;">
+                                <i class="fas fa-radiation"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-danger d-flex align-items-center gap-2" style="letter-spacing: -0.5px;">
+                            {{ $activeCount }}
+                            @if($activeCount > 0)
+                                <span class="pulse-dot-red"></span>
+                            @endif
+                        </h3>
+                        <small class="text-muted" style="font-size: 11px;">{{ $activeCount > 0 ? 'Requires attention' : 'All clear' }}</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="threat-kpi-card p-3 h-100" style="border-top: 3.5px solid #f43f5e;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Critical Breaches</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-danger" style="width: 34px; height: 34px; background: rgba(244, 63, 94, 0.12); font-size: 13px;">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $allAlerts->where('severity', 'critical')->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Forced door / tampering</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="threat-kpi-card p-3 h-100" style="border-top: 3.5px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">Resolved & Cleared</span>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 34px; height: 34px; background: rgba(16, 185, 129, 0.12); font-size: 13px;">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success" style="letter-spacing: -0.5px;">{{ $allAlerts->where('is_resolved', 1)->count() }}</h3>
+                        <small class="text-muted" style="font-size: 11px;">Audited & safe</small>
+                    </div>
+                </div>
+            </div>
+
             {{-- Date Filter Section --}}
-            <div class="filter-toolbar mb-4 date-filter-section">
+            <div class="filter-toolbar mb-4 date-filter-section shadow-sm">
                 <div class="d-flex flex-wrap align-items-center gap-3">
-                    <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                        <i class="fas fa-exclamation-triangle me-1"></i> Incident Log Filter
+                    <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">
+                        <i class="fas fa-filter me-1"></i> Threat Audit Filter
                     </span>
 
                     <div class="d-flex align-items-center gap-2">
@@ -476,7 +565,7 @@
                         <input type="date" id="maxDate" class="form-control form-control-sm rounded-pill px-3" style="max-width: 150px; background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-main);">
                     </div>
                     
-                    <button id="clearDateFilter" class="btn btn-sm rounded-pill px-3 fw-semibold ms-auto" style="background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <button id="clearDateFilter" class="btn btn-sm rounded-pill px-3 fw-semibold ms-auto" style="background: var(--bg-subtle); border: 1px solid var(--border-color); color: var(--text-muted); transition: all 0.2s ease;">
                         <i class="fas fa-history me-1"></i> Reset Range
                     </button>
                 </div>

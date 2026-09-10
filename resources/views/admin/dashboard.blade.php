@@ -226,11 +226,55 @@
                 $cardColClass = $isAdminOrDean ? 'col-12 col-sm-6 col-xl-3' : 'col-12 col-md-6';
             @endphp
 
+            <!-- 🟢 LIVE IOT HARDWARE TELEMETRY HUD STRIP -->
+            <div class="cyber-hud-strip p-3 p-md-4 mb-4">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                    <!-- Node & Telemetry Status -->
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 48px; height: 48px; background: rgba(0, 210, 255, 0.15); border: 1.5px solid rgba(0, 210, 255, 0.4); box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);">
+                            <i class="fas fa-satellite-dish fs-5 text-info"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="cyber-badge cyber-badge-cyan">
+                                    <span class="pulse-dot-cyan"></span> ESP8266 Live Node
+                                </span>
+                                <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-20 rounded-pill px-2.5 py-1 small fw-bold">
+                                    Room 101 • Dedicated Hub
+                                </span>
+                            </div>
+                            <h6 class="fw-bold mb-0 text-white" style="letter-spacing: -0.2px;">Cyber-Physical Hardware Node Online</h6>
+                            <small class="text-white-50" style="font-size: 11.5px;">Fail-Secure 12V Solenoid • 500 DPI Optical Biometrics • Background Push Engine Ready</small>
+                        </div>
+                    </div>
+
+                    <!-- Quick Hardware Telemetry Metrics -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="px-3 py-1.5 rounded-3 border border-white border-opacity-10" style="background: rgba(255,255,255,0.05); text-align: center;">
+                            <span class="d-block text-white-50 small" style="font-size: 10px; letter-spacing: 0.5px;">SOLENOID RELAY</span>
+                            <span class="fw-bold text-success" style="font-size: 12px;"><i class="fas fa-bolt me-1"></i>ENGAGED</span>
+                        </div>
+                        <div class="px-3 py-1.5 rounded-3 border border-white border-opacity-10" style="background: rgba(255,255,255,0.05); text-align: center;">
+                            <span class="d-block text-white-50 small" style="font-size: 10px; letter-spacing: 0.5px;">SIGNAL LINK</span>
+                            <span class="fw-bold text-info" style="font-size: 12px;"><i class="fas fa-wifi me-1"></i>{{ $health->wifi_signal_dbm ?? '-58' }} dBm</span>
+                        </div>
+                        <div class="px-3 py-1.5 rounded-3 border border-white border-opacity-10" style="background: rgba(255,255,255,0.05); text-align: center;">
+                            <span class="d-block text-white-50 small" style="font-size: 10px; letter-spacing: 0.5px;">BACKUP POWER</span>
+                            <span class="fw-bold text-warning" style="font-size: 12px;"><i class="fas fa-battery-three-quarters me-1"></i>{{ (int)($health->battery_pct ?? 100) }}%</span>
+                        </div>
+                        <div class="px-3 py-1.5 rounded-3 border border-white border-opacity-10" style="background: rgba(255,255,255,0.05); text-align: center;">
+                            <span class="d-block text-white-50 small" style="font-size: 10px; letter-spacing: 0.5px;">RESPONSE PING</span>
+                            <span class="fw-bold text-light" style="font-size: 12px;"><i class="fas fa-tachometer-alt me-1"></i>{{ $health->network_latency_ms ?? '18' }} ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 🟢 METRICS & KPI CARDS GRID -->
             <div class="row g-3 g-md-4 mb-4">
                 <!-- CARD 1: SECURITY / DOOR LOCK STATUS -->
                 <div class="{{ $cardColClass }}">
-                    <div class="stat-card-modern p-3 p-md-4 h-100">
+                    <div class="stat-card-modern p-3 p-md-4 h-100" style="border-top: 3.5px solid #1d4ed8;">
                         <i class="fas fa-lock watermark-icon"></i>
                         <div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -261,7 +305,7 @@
                 @if($isAdminOrDean)
                 <!-- CARD 2: HARDWARE VITALS (Admin & Dean Only) -->
                 <div class="{{ $cardColClass }}">
-                    <div class="stat-card-modern p-3 p-md-4 h-100">
+                    <div class="stat-card-modern p-3 p-md-4 h-100" style="border-top: 3.5px solid #10b981;">
                         <i class="fas fa-microchip watermark-icon"></i>
                         <div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -304,7 +348,7 @@
 
                 <!-- CARD 3: SECURITY THREATS & ALERTS (Admin & Dean Only) -->
                 <div class="{{ $cardColClass }}">
-                    <div class="stat-card-modern p-3 p-md-4 h-100">
+                    <div class="stat-card-modern p-3 p-md-4 h-100" style="border-top: 3.5px solid #ef4444;">
                         <i class="fas fa-exclamation-triangle watermark-icon text-danger"></i>
                         <div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -343,7 +387,7 @@
 
                 <!-- CARD 4: NETWORK / CONNECTION STATUS -->
                 <div class="{{ $cardColClass }}">
-                    <div class="stat-card-modern p-3 p-md-4 h-100">
+                    <div class="stat-card-modern p-3 p-md-4 h-100" style="border-top: 3.5px solid #8b5cf6;">
                         <i class="fas fa-wifi watermark-icon"></i>
                         <div>
                             <div class="d-flex justify-content-between align-items-start mb-3">

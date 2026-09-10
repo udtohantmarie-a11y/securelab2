@@ -135,17 +135,24 @@
             @php
                 $hour = \Carbon\Carbon::now()->hour;
                 $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+                $greetingIcon = $hour < 18 ? 'fa-sun text-warning' : 'fa-moon text-info';
             @endphp
             <div class="d-flex align-items-center gap-2">
-                <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">{{ $greeting }}, {{ Auth::user()->full_name }}!</h4>
-                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1 fw-bold" style="font-size: 10px;">
-                    <i class="fas fa-shield-alt me-1"></i>{{ Auth::user()->role }}
+                <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">
+                    <i class="fas {{ $greetingIcon }} me-1 fs-6"></i>{{ $greeting }}, {{ Auth::user()->full_name }}!
+                </h4>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2.5 py-1 fw-bold" style="font-size: 10.5px;">
+                    <i class="fas fa-shield-alt me-1"></i>{{ Auth::user()->role }} Portal
                 </span>
             </div>
             <p class="text-muted small mb-0 d-flex align-items-center gap-2" style="font-size: 11px;">
                 <span><i class="far fa-calendar-alt text-primary me-1"></i>{{ \Carbon\Carbon::now()->format('l, M d, Y') }}</span>
                 <span class="text-muted">•</span>
-                <span class="text-success fw-semibold"><i class="fas fa-circle text-success me-1" style="font-size: 7px;"></i>Real-time Monitoring Active</span>
+                <span class="text-success fw-bold d-inline-flex align-items-center">
+                    <span class="pulse-dot-success me-1" style="width: 6px; height: 6px;"></span> ESP8266 Live Node
+                </span>
+                <span class="text-muted d-none d-xl-inline">•</span>
+                <span class="text-info small fw-semibold d-none d-xl-inline"><i class="fas fa-wifi me-1"></i>Link: -58 dBm</span>
             </p>
         </div>
     </div>

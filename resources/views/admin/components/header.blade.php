@@ -59,6 +59,17 @@
         --radius-md: 14px;
         --radius-lg: 20px;
         --radius-xl: 24px;
+
+        /* 🛡️ Cyber-Defense Command Center Palette */
+        --cyber-cyan: #00d2ff;
+        --cyber-cyan-glow: rgba(0, 210, 255, 0.35);
+        --cyber-emerald: #10b981;
+        --cyber-emerald-glow: rgba(16, 185, 129, 0.3);
+        --cyber-amber: #f59e0b;
+        --cyber-crimson: #ef4444;
+        --cyber-purple: #8b5cf6;
+        --cyber-slate: #0b1528;
+        --shadow-cyber: 0 10px 25px -5px rgba(13, 110, 253, 0.12), 0 0 0 1px rgba(56, 189, 248, 0.2);
     }
 
     /* Global Body */
@@ -189,15 +200,101 @@
     }
 
     .sidebar .nav-link.active {
-        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        background: linear-gradient(135deg, rgba(29, 78, 216, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%);
         color: #ffffff !important;
-        font-weight: 600;
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.38);
-        transform: translateX(3px);
+        font-weight: 700;
+        box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45), inset 0 0 12px rgba(56, 189, 248, 0.25);
+        border-left: 3.5px solid #38bdf8;
+        transform: translateX(4px);
     }
     .sidebar .nav-link.active i {
         opacity: 1;
         color: #ffffff;
+    }
+
+    /* 🛡️ CYBER-DEFENSE COMMAND CENTER UTILITIES */
+    .cyber-hud-strip {
+        background: linear-gradient(165deg, #091322 0%, #0d1e38 50%, #060e1a 100%);
+        border-radius: 20px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        box-shadow: 0 20px 40px -10px rgba(2, 6, 23, 0.5), 0 0 30px rgba(13, 110, 253, 0.15);
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+    .cyber-hud-strip::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
+    }
+
+    .pulse-dot-cyan {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00d2ff;
+        box-shadow: 0 0 0 rgba(0, 210, 255, 0.6);
+        animation: pulse-cyan 2s infinite;
+    }
+    @keyframes pulse-cyan {
+        0% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
+        70% { box-shadow: 0 0 0 8px rgba(0, 210, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
+    }
+
+    .mono-chip {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.2px;
+    }
+
+    .cyber-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .cyber-badge-cyan {
+        background: rgba(0, 210, 255, 0.12);
+        color: #00d2ff;
+        border: 1px solid rgba(0, 210, 255, 0.3);
+    }
+    .cyber-badge-emerald {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .cyber-badge-crimson {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .cyber-room-card {
+        border-radius: 18px;
+        border: 1.5px solid var(--border-color);
+        background: var(--bg-surface);
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .cyber-room-card:hover {
+        transform: translateY(-4px);
+        border-color: #38bdf8;
+        box-shadow: 0 14px 28px -4px rgba(13, 110, 253, 0.1);
     }
 
     /* =========================================================
