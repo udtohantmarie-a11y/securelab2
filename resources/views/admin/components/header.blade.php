@@ -3,9 +3,10 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
 <meta name="theme-color" content="#0a192f">
-<link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-<link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-<link rel="apple-touch-icon" href="{{ asset('icons/icon-fingerprint-192.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}?v=3">
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/icon-192x192.png') }}?v=3">
 <link rel="manifest" href="{{ asset('manifest.json') }}">
 
 <!-- Bootstrap 5.3 & FontAwesome -->

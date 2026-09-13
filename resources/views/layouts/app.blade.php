@@ -8,9 +8,10 @@
     <title>SecureLab | Smart Access</title>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/icons/icon-fingerprint-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=3">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png?v=3">
     <meta name="theme-color" content="#4f46e5">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
