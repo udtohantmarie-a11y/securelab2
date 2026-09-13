@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "xyz.securelab_talibon.twa",
+    "sha256_cert_fingerprints": ["43:52:1B:3E:B7:D8:4E:42:F7:FF:97:33:27:E2:19:5D:3C:F9:0F:CD:28:D0:61:FB:18:83:E2:44:CF:5B:D7:DB"]
+  }
+}]
