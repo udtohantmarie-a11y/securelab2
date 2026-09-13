@@ -46,6 +46,7 @@ self.addEventListener('fetch', (event) => {
         url.pathname.startsWith('/users') ||
         url.pathname.startsWith('/logout') ||
         url.pathname.startsWith('/login') ||
+        url.pathname.startsWith('/auth-status') || 
         url.search) {
         return;
     }

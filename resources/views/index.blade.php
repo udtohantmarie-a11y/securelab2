@@ -2021,21 +2021,22 @@
 
     <script>
         window.addEventListener('load', function() {
-            fetch('{{ route("dashboard") }}', { 
+            fetch('{{ route("auth.status") }}', { 
                 cache: 'no-store',
                 headers: { 
                     'X-Requested-With': 'XMLHttpRequest', 
                     'Accept': 'application/json'
                 }
             })
-            .then(response => {
-                if (response.ok && response.url.includes('dashboard')) {
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.authenticated) {
                     document.body.style.opacity = '0.5'; 
                     window.location.replace('{{ route("dashboard") }}');
                 }
             })
             .catch(err => {
-                console.log('Network Error or Offline mode:', err);
+                // Silently bypass in offline mode
             });
         });
     </script>
