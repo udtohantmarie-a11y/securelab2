@@ -47,6 +47,8 @@ Route::get('/download-apk', function () {
         'Content-Type' => 'application/vnd.android.package-archive',
         'Content-Disposition' => 'attachment; filename="SecureLab.apk"',
     ]);
+})->name('app.download.apk');
+
 // Public Auth Status Probe (Clean 200 JSON for guest/auth check without 401 console error)
 Route::get('/auth-status', function () {
     return response()->json([
