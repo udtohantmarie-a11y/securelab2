@@ -114,10 +114,14 @@ class DashboardController extends Controller
 
     private function getNavbarData()
     {
-        DB::table('devices')
-            ->where('is_online', 1)
-            ->where('last_ping_at', '<', now()->subMinutes(3))
-            ->update(['is_online' => 0]);
+        // 🟢 PERFORMANCE OPTIMIZATION: Throttle offline device update to at most once every 60 seconds
+        if (!cache()->has('last_device_offline_check')) {
+            cache()->put('last_device_offline_check', true, 60);
+            DB::table('devices')
+                ->where('is_online', 1)
+                ->where('last_ping_at', '<', now()->subMinutes(3))
+                ->update(['is_online' => 0]);
+        }
 
         $userId = Auth::id();
         $inboxData = DB::query()->fromSub($this->getInboxQuery($userId), 'inbox')
@@ -734,6 +738,7 @@ class DashboardController extends Controller
             ->join('users as u', 'ra.user_id', '=', 'u.user_id')
             ->join('rooms as r', 'ra.room_id', '=', 'r.room_id')
             ->join('users as assigner', 'ra.assigned_by', '=', 'assigner.user_id')
+            ->leftJoin('users as occupant', 'r.occupied_by', '=', 'occupant.user_id')
             ->where('ra.user_id', Auth::id())
             ->where('ra.is_active', 1)
             ->select(
@@ -743,6 +748,10 @@ class DashboardController extends Controller
                 'r.is_active as room_is_active', 
                 DB::raw("IFNULL(r.door_state, 'locked') as door_state"),
                 'r.occupancy_status',
+                'r.occupied_by',
+                'r.occupied_at',
+                'occupant.full_name as occupied_by_name',
+                'occupant.role as occupied_by_role',
                 'ra.access_level', 'ra.valid_from', 'ra.valid_until', 'ra.is_active',
                 'ra.pin_code',
                 'assigner.full_name as assigned_by_name'
@@ -760,6 +769,11 @@ class DashboardController extends Controller
             $isExpired = $room->valid_until && \Carbon\Carbon::parse($room->valid_until)->isPast();
             $room->access_verified = $room->is_active && $room->room_is_active && !$isExpired;
             $room->access_expired = (bool) $isExpired;
+
+            // 🟢 OCCUPANCY LOCKOUT: Disable other users while room is occupied
+            $isOccupied = ($room->occupancy_status ?? 'vacant') === 'occupied';
+            $room->is_my_occupancy = $isOccupied && !empty($room->occupied_by) && ($room->occupied_by == Auth::id());
+            $room->is_locked_out = $isOccupied && !$room->is_my_occupancy && (Auth::user()->role !== 'Admin');
         }
 
         return view('admin.my_rooms', array_merge($navData, ['myRooms' => $myRooms]));
@@ -944,6 +958,11 @@ class DashboardController extends Controller
             'action' => 'required|in:lock,unlock'
         ]);
 
+        $room = DB::table('rooms')->where('room_id', $request->room_id)->first();
+        if (!$room) {
+            return back()->with('error', 'Laboratory room not found.');
+        }
+
         if (Auth::user()->role !== 'Admin') {
             $assignment = DB::table('room_assignments')
                 ->where('user_id', Auth::id())
@@ -964,6 +983,17 @@ class DashboardController extends Controller
             }
         }
 
+        // 🟢 MUTUAL EXCLUSION CHECK: Disallow other users from unlocking if room is currently occupied
+        if ($request->action === 'unlock' && ($room->occupancy_status ?? 'vacant') === 'occupied') {
+            $isMyOccupancy = !empty($room->occupied_by) && ($room->occupied_by == Auth::id());
+            $isAdmin = Auth::user()->role === 'Admin';
+            if (!$isMyOccupancy && !$isAdmin) {
+                $occupantName = $room->occupied_by ? DB::table('users')->where('user_id', $room->occupied_by)->value('full_name') : null;
+                $displayOccupant = $occupantName ?: 'another instructor';
+                return back()->with('error', 'Action Denied: This laboratory is currently in use by ' . $displayOccupant . '. Unlock controls are disabled until the room is marked VACANT.');
+            }
+        }
+
         $newState = $request->action === 'unlock' ? 'unlocked' : 'locked';
         $actionEnum = $request->action === 'unlock' ? 'remote_unlock' : 'remote_lock';
 
@@ -974,6 +1004,8 @@ class DashboardController extends Controller
 
         if ($newState === 'unlocked') {
             $roomUpdates['occupancy_status'] = 'occupied';
+            $roomUpdates['occupied_by'] = Auth::id();
+            $roomUpdates['occupied_at'] = now();
             
             DB::table('audit_logs')
                 ->where('room_id', $request->room_id)
@@ -1793,8 +1825,26 @@ class DashboardController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized for this laboratory.'], 403);
         }
 
+        $room = DB::table('rooms')->where('room_id', $roomId)->first();
+        if (!$room) {
+            return response()->json(['success' => false, 'message' => 'Laboratory not found.'], 404);
+        }
+
+        // If marking vacant, only occupant or Admin can vacate
+        if ($status === 'vacant' && !empty($room->occupied_by)) {
+            $isOccupant = ($room->occupied_by == Auth::id());
+            if (!$isAdmin && !$isOccupant) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Action Denied: Only the active occupant or an Administrator can mark this laboratory as VACANT.'
+                ], 403);
+            }
+        }
+
         DB::table('rooms')->where('room_id', $roomId)->update([
             'occupancy_status' => $status,
+            'occupied_by' => $status === 'occupied' ? Auth::id() : null,
+            'occupied_at' => $status === 'occupied' ? now() : null,
             'updated_at' => now()
         ]);
 

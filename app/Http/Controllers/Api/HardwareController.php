@@ -221,13 +221,44 @@ class HardwareController extends Controller
             ]);
         }
 
+        // 🟢 MUTUAL EXCLUSION CHECK FOR BIOMETRIC SCAN:
+        // Kung occupied ang room ng ibang user at hindi Admin ang nag-scan, block access
+        $isOccupied = ($room->occupancy_status ?? 'vacant') === 'occupied';
+        $isCurrentOccupant = !empty($room->occupied_by) && ($room->occupied_by == $user->user_id);
+        $isAdmin = ($user->role === 'Admin');
+
+        if ($isOccupied && !$isCurrentOccupant && !$isAdmin) {
+            DB::table('audit_logs')->insert([
+                'room_id' => $room->room_id,
+                'device_id' => $device->device_id,
+                'user_id' => $user->user_id,
+                'user_name' => $user->full_name,
+                'action' => 'attempt_failed',
+                'method' => 'fingerprint',
+                'door_state_after' => 'locked',
+                'notes' => 'Access Denied: Room is currently OCCUPIED by another user.',
+                'logged_at' => now()
+            ]);
+
+            return response()->json([
+                'access' => 'denied',
+                'message' => 'Room Currently In Use'
+            ]);
+        }
+
         // ==========================================
         // SUCCESSFUL ACCESS: I-TOGGLE ANG PINTO
         // ==========================================
         $newState = $room->door_state === 'locked' ? 'unlocked' : 'locked';
 
         DB::transaction(function () use ($room, $device, $user, $fingerprint, $newState, $request) {
-            DB::table('rooms')->where('room_id', $room->room_id)->update(['door_state' => $newState]);
+            $roomUpdates = ['door_state' => $newState];
+            if ($newState === 'unlocked') {
+                $roomUpdates['occupancy_status'] = 'occupied';
+                $roomUpdates['occupied_by'] = $user->user_id;
+                $roomUpdates['occupied_at'] = now();
+            }
+            DB::table('rooms')->where('room_id', $room->room_id)->update($roomUpdates);
 
             DB::table('audit_logs')->insert([
                 'room_id' => $room->room_id,

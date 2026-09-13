@@ -18,6 +18,23 @@ Route::get('/clear-cache', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
+
+    // Auto-ensure occupancy tracking columns exist on rooms table
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('rooms')) {
+            \Illuminate\Support\Facades\Schema::table('rooms', function (\Illuminate\Database\Schema\Blueprint $table) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('rooms', 'occupied_by')) {
+                    $table->unsignedBigInteger('occupied_by')->nullable()->after('occupancy_status');
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('rooms', 'occupied_at')) {
+                    $table->timestamp('occupied_at')->nullable()->after('occupied_by');
+                }
+            });
+        }
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::warning('Occupancy columns auto-setup notice: ' . $e->getMessage());
+    }
+
     return 'Laravel Cache Cleared Successfully!';
 });
 

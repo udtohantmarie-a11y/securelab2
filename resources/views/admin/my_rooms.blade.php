@@ -216,21 +216,31 @@
                     @php
                         $hardwareOnline = $room->is_active && $room->room_is_active;
                         $isReadOnly = $room->access_level === 'readonly';
-                        $canOperate = $room->access_verified && $hardwareOnline && !$isReadOnly;
+                        $isLockedOut = !empty($room->is_locked_out);
+                        $isMyOccupancy = !empty($room->is_my_occupancy);
+                        $canOperate = $room->access_verified && $hardwareOnline && !$isReadOnly && !$isLockedOut;
                         $doorState = strtolower($room->door_state ?? 'locked');
-                        $cardTopBorder = !$hardwareOnline ? '#ef4444' : ($doorState === 'locked' ? '#10b981' : '#f59e0b');
+                        $cardTopBorder = !$hardwareOnline ? '#ef4444' : ($isLockedOut ? '#ef4444' : ($doorState === 'locked' ? '#10b981' : '#f59e0b'));
                     @endphp
                     <div class="col-12 col-md-6 col-xl-4">
                         <div class="room-control-card h-100 p-3 p-md-4" style="border-top: 3.5px solid {{ $cardTopBorder }};">
                             <i class="fas fa-door-open watermark-icon"></i>
                             
                             <div class="d-flex justify-content-between align-items-start mb-4">
-                                <div class="stat-icon-wrapper {{ $hardwareOnline ? ($canOperate ? 'bg-gradient-primary' : ($isReadOnly ? 'bg-gradient-info' : 'bg-gradient-warning')) : 'bg-gradient-danger' }}">
+                                <div class="stat-icon-wrapper {{ $hardwareOnline ? ($canOperate ? 'bg-gradient-primary' : ($isLockedOut ? 'bg-gradient-danger' : ($isReadOnly ? 'bg-gradient-info' : 'bg-gradient-warning'))) : 'bg-gradient-danger' }}">
                                     <i class="fas fa-door-open"></i>
                                 </div>
 
                                 @if(!$hardwareOnline)
                                     <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 shadow-xs fw-bold">Offline</span>
+                                @elseif($isLockedOut)
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 shadow-xs fw-bold" title="Occupied by {{ $room->occupied_by_name ?? 'Another Instructor' }}">
+                                        <i class="fas fa-user-lock me-1"></i> In Use by {{ Str::limit($room->occupied_by_name ?? 'Occupant', 14) }}
+                                    </span>
+                                @elseif($isMyOccupancy)
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 shadow-xs fw-bold">
+                                        <i class="fas fa-user-check me-1"></i> You are In-Class
+                                    </span>
                                 @elseif($room->access_expired)
                                     <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 shadow-xs fw-bold">Expired</span>
                                 @elseif(!$room->access_verified)
@@ -260,7 +270,17 @@
                             </div>
 
                             <!-- NOTIFICATIONS FOR ACCESS LEVELS -->
-                            @if($isReadOnly)
+                            @if($isLockedOut)
+                                <div class="alert alert-danger border-0 small py-2 px-3 mb-3 fw-medium shadow-xs" style="border-radius: 12px; background-color: rgba(239, 68, 68, 0.1); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.25);">
+                                    <i class="fas fa-user-lock me-1"></i>
+                                    <strong>Laboratory In Use:</strong> Kasalukuyang ginagamit ni <strong>{{ $room->occupied_by_name ?? 'ibang guro' }}</strong>. Naka-disable ang unlock controls at babalik kapag na-set na pabalik sa VACANT.
+                                </div>
+                            @elseif($isMyOccupancy)
+                                <div class="alert alert-primary border-0 small py-2 px-3 mb-3 fw-medium shadow-xs" style="border-radius: 12px; background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.25);">
+                                    <i class="fas fa-user-check me-1"></i>
+                                    <strong>Active Class / Occupant:</strong> Ikaw ang kasalukuyang may hawak ng laboratoryo. Pindutin ang Class Status button kapag tapos na ang klase upang maging VACANT muli para sa iba.
+                                </div>
+                            @elseif($isReadOnly)
                                 <div class="alert alert-info border-0 small py-2 px-3 mb-3 fw-medium shadow-xs" style="border-radius: 12px; background-color: rgba(6, 182, 212, 0.12); color: #0e7490; border: 1px solid rgba(6, 182, 212, 0.25);">
                                     <i class="fas fa-eye me-1"></i>
                                     You have View-Only access. Remote controls are disabled.
@@ -277,13 +297,21 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="fw-bold mb-0 text-dark" style="font-size: 13px;">Class Status</h6>
-                                        <small class="text-muted" style="font-size: 10px;">Is there an ongoing class?</small>
+                                        <small class="text-muted" style="font-size: 10px;">
+                                            @if($isLockedOut)
+                                                In use by {{ $room->occupied_by_name ?? 'another user' }}
+                                            @elseif($isMyOccupancy)
+                                                Ongoing class (You)
+                                            @else
+                                                Is there an ongoing class?
+                                            @endif
+                                        </small>
                                     </div>
                                     <button id="occupancyBtn-{{ $room->room_id }}" 
                                             class="btn {{ ($room->occupancy_status ?? 'vacant') == 'occupied' ? 'btn-danger' : 'btn-success' }} fw-bold rounded-pill px-3 py-1 shadow-xs small" 
                                             style="font-size: 11px;"
                                             onclick="toggleOccupancy('{{ $room->room_id }}', '{{ $room->occupancy_status ?? 'vacant' }}')"
-                                            {{ !$canOperate ? 'disabled' : '' }}>
+                                            {{ ($isLockedOut || (!$canOperate && !$isMyOccupancy && Auth::user()->role !== 'Admin')) ? 'disabled' : '' }}>
                                         <i class="fas {{ ($room->occupancy_status ?? 'vacant') == 'occupied' ? 'fa-users' : 'fa-door-open' }} me-1"></i>
                                         <span id="occupancyText-{{ $room->room_id }}">{{ strtoupper($room->occupancy_status ?? 'VACANT') }}</span>
                                     </button>
@@ -297,22 +325,28 @@
                                 </label>
 
                                 @if($hardwareOnline)
-                                    <form action="{{ route('rooms.remote-control') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="room_id" value="{{ $room->room_id }}">
+                                    @if($isLockedOut)
+                                        <button type="button" class="btn btn-secondary w-100 control-btn py-3 shadow-xs mb-2 opacity-75" disabled title="Disabled while room is in use by {{ $room->occupied_by_name ?? 'occupant' }}">
+                                            <i class="fas fa-ban me-2"></i> Room In Use (Disabled)
+                                        </button>
+                                    @else
+                                        <form action="{{ route('rooms.remote-control') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="room_id" value="{{ $room->room_id }}">
 
-                                        @if(($room->door_state ?? 'locked') === 'locked')
-                                            <input type="hidden" name="action" value="unlock">
-                                            <button type="submit" class="btn btn-success w-100 control-btn py-3 shadow-xs mb-2" {{ !$canOperate ? 'disabled' : '' }}>
-                                                <i class="fas fa-unlock-alt me-2"></i> Unlock Room
-                                            </button>
-                                        @else
-                                            <input type="hidden" name="action" value="lock">
-                                            <button type="submit" class="btn btn-danger w-100 control-btn py-3 shadow-xs mb-2" {{ !$canOperate ? 'disabled' : '' }}>
-                                                <i class="fas fa-lock me-2"></i> Lock Room
-                                            </button>
-                                        @endif
-                                    </form>
+                                            @if(($room->door_state ?? 'locked') === 'locked')
+                                                <input type="hidden" name="action" value="unlock">
+                                                <button type="submit" class="btn btn-success w-100 control-btn py-3 shadow-xs mb-2" {{ !$canOperate ? 'disabled' : '' }}>
+                                                    <i class="fas fa-unlock-alt me-2"></i> Unlock Room
+                                                </button>
+                                            @else
+                                                <input type="hidden" name="action" value="lock">
+                                                <button type="submit" class="btn btn-danger w-100 control-btn py-3 shadow-xs mb-2" {{ (!$canOperate && !$isMyOccupancy && Auth::user()->role !== 'Admin') ? 'disabled' : '' }}>
+                                                    <i class="fas fa-lock me-2"></i> Lock Room
+                                                </button>
+                                            @endif
+                                        </form>
+                                    @endif
 
                                     <!-- FINGERPRINT BOX -->
                                     @if($room->fingerprint)
@@ -772,8 +806,9 @@
                         btn.className = 'btn btn-success fw-bold rounded-pill px-3 py-1 shadow-sm small';
                         btn.innerHTML = '<i class="fas fa-door-open me-1"></i><span id="occupancyText-' + roomId + '">VACANT</span>';
                     }
+                    setTimeout(fetchRoomsData, 400);
                 } else {
-                    alert("Error updating status!");
+                    alert(data.message || "Error updating status!");
                     location.reload(); 
                 }
             })

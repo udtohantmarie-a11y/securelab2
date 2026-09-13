@@ -251,12 +251,22 @@ Route::post('/hardware-log', function (Request $request) {
 
     if ($doorState === 'unlocked' && in_array($eventType, ['BIOMETRIC ACCESS', 'KEYPAD ACCESS', 'WEB DASHBOARD', 'REMOTE ACCESS'])) {
         $roomUpdates['occupancy_status'] = 'occupied';
+        if ($userId) {
+            $roomUpdates['occupied_by'] = $userId;
+            $roomUpdates['occupied_at'] = now();
+        }
     }
 
     if ($eventType === 'SET OCCUPIED') {
         $roomUpdates['occupancy_status'] = 'occupied';
+        if ($userId) {
+            $roomUpdates['occupied_by'] = $userId;
+            $roomUpdates['occupied_at'] = now();
+        }
     } elseif ($eventType === 'SET VACANT') {
         $roomUpdates['occupancy_status'] = 'vacant';
+        $roomUpdates['occupied_by'] = null;
+        $roomUpdates['occupied_at'] = null;
     }
 
     DB::table('rooms')->where('room_id', $roomId)->update($roomUpdates);
@@ -630,6 +640,23 @@ Route::get('/verify-fingerprint/{room_id}/{fp_id}', function ($room_id, $fp_id) 
         ->first();
 
     $authorized = (bool) ($assignment && $user);
+
+    // 🟢 MUTUAL EXCLUSION CHECK: Block other users if room is currently occupied
+    if ($authorized) {
+        $room = DB::table('rooms')->where('room_id', $room_id)->first();
+        if ($room && ($room->occupancy_status ?? 'vacant') === 'occupied' && !empty($room->occupied_by)) {
+            $isOccupant = ($room->occupied_by == $fp->user_id);
+            $isAdmin = ($user->role === 'Admin');
+            if (!$isOccupant && !$isAdmin) {
+                return response()->json([
+                    'authorized' => false,
+                    'reason' => 'room_occupied',
+                    'name' => $user->full_name,
+                    'message' => 'Room Occupied by Another Class'
+                ]);
+            }
+        }
+    }
 
     return response()->json([
         'authorized' => $authorized,
