@@ -37,6 +37,18 @@ Route::get('/run-push-migration', function () {
     return 'Push subscriptions table verified and ready!';
 });
 
+// ROUTE TO DOWNLOAD ANDROID APK PACKAGE
+Route::get('/download-apk', function () {
+    $path = public_path('downloads/SecureLab.apk');
+    if (!file_exists($path)) {
+        abort(404, 'SecureLab APK package not found on server.');
+    }
+    return response()->download($path, 'SecureLab.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+        'Content-Disposition' => 'attachment; filename="SecureLab.apk"',
+    ]);
+})->name('app.download.apk');
+
 // 1. Landing Page (Public Access)
 Route::get('/', function () {
     if (Auth::check()) {

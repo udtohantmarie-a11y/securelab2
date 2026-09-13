@@ -128,6 +128,17 @@
                 <i class="fas fa-cog me-3 text-center text-secondary" style="width: 20px;"></i>
                 <span>{{ Auth::user()?->role == 'Admin' ? 'System Settings' : 'Account Settings' }}</span>
             </a>
+
+            {{-- MOBILE APP DOWNLOAD --}}
+            <div class="section-label mt-3">Mobile Access</div>
+            
+            <a href="{{ route('app.download.apk') }}" 
+               class="nav-link text-success" 
+               download="SecureLab.apk" 
+               title="Download Android APK package">
+                <i class="fab fa-android me-3 text-center text-success" style="width: 20px;"></i>
+                <span>Download APK (Android)</span>
+            </a>
             
         </nav>
     </div>

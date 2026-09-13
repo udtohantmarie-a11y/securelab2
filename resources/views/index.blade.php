@@ -889,6 +889,7 @@
                     <li class="nav-item"><a class="nav-link" href="#roles"><i class="fas fa-users-cog me-1 text-primary"></i>Who Can Access</a></li>
                     <li class="nav-item"><a class="nav-link" href="#features"><i class="fas fa-shield-alt me-1 text-primary"></i>Features</a></li>
                     <li class="nav-item"><a class="nav-link" href="#process"><i class="fas fa-microchip me-1 text-primary"></i>How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link text-success fw-semibold" href="#" data-bs-toggle="modal" data-bs-target="#pwaGuideModal"><i class="fas fa-mobile-alt me-1 text-success"></i>Get Mobile App</a></li>
                 </ul>
 
                 <!-- 🟢 INCLUSIVE PORTAL ACTIONS (Dean, Faculty, Staff & Admin) -->
@@ -962,8 +963,8 @@
                             <button class="btn btn-portal-secondary px-4 py-3" data-bs-toggle="modal" data-bs-target="#registerModal">
                                 <i class="fas fa-user-plus me-2"></i>Request Personnel Access
                             </button>
-                            <button id="installApp" class="btn btn-outline-success rounded-pill px-4 py-3 fw-bold shadow-sm">
-                                <i class="fas fa-mobile-alt me-2"></i>Install PWA App
+                            <button id="installApp" class="btn btn-outline-success rounded-pill px-4 py-3 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#pwaGuideModal">
+                                <i class="fab fa-android text-success me-1"></i><i class="fab fa-apple text-dark me-2"></i>Get Mobile App
                             </button>
                         </div>
 
@@ -1694,59 +1695,118 @@
         </div>
     </div>
 
-    <!-- 🟢 PWA INSTALLATION GUIDE MODAL -->
+    <!-- 🟢 MOBILE APP INSTALLATION & DOWNLOAD MODAL (ANDROID & IPHONE) -->
     <div class="modal fade" id="pwaGuideModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="modal-header border-0 pb-0 pt-4 px-4">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-2 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                            <i class="fas fa-mobile-screen-button fs-5"></i>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+                
+                <!-- Header -->
+                <div class="modal-header border-0 pb-2 pt-4 px-4 bg-light">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-2 text-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-mobile-screen fs-4 text-primary"></i>
                         </div>
                         <div>
-                            <h5 class="modal-title fw-bold text-dark mb-0">Install SecureLab App</h5>
-                            <small class="text-muted">Progressive Web Application (PWA)</small>
+                            <h5 class="modal-title fw-bold text-dark mb-0">Get SecureLab Mobile App</h5>
+                            <small class="text-muted fw-semibold">Available for Android Devices & Apple iPhones</small>
                         </div>
                     </div>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body px-4 py-3">
-                    <p class="text-muted small mb-3">Install SecureLab directly onto your smartphone or computer for instant access, standalone fullscreen mode, and offline capability—no App Store download required!</p>
-                    
-                    <div class="d-flex flex-column gap-3">
-                        <div class="p-3 rounded-3 bg-light border">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fab fa-android text-success fs-5"></i>
-                                <span class="fw-bold small text-dark">Android (Google Chrome)</span>
-                            </div>
-                            <div class="small text-muted ps-4">
-                                Tap the <strong>three dots (⋮)</strong> in the top-right corner, then tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-4">
+                        Piliin ang inyong mobile device para i-install ang SecureLab. May buong suporta ito para sa biometric authentication (Fingerprint / Face ID), instant door control, at push notifications.
+                    </p>
+
+                    <div class="row g-3">
+                        
+                        <!-- 🟢 ANDROID CARD -->
+                        <div class="col-md-6">
+                            <div class="p-3 h-100 rounded-4 border border-success border-opacity-25 bg-success bg-opacity-10 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fab fa-android text-success fs-3"></i>
+                                            <span class="fw-bold text-dark fs-6">Android Users</span>
+                                        </div>
+                                        <span class="badge bg-success text-white rounded-pill px-2 py-1 small">Recommended</span>
+                                    </div>
+                                    <p class="small text-muted mb-3" style="font-size: 0.85rem;">
+                                        Maaari mong i-download ang direct installer (APK) o i-install bilang Web App sa Chrome.
+                                    </p>
+
+                                    <!-- Choice 1: Direct APK -->
+                                    <div class="bg-white p-3 rounded-3 border mb-2 shadow-sm">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="fw-bold small text-dark"><i class="fas fa-download text-success me-1"></i> Option 1: Standalone APK</span>
+                                            <span class="badge bg-light text-dark border small">5.15 MB</span>
+                                        </div>
+                                        <p class="small text-muted mb-2" style="font-size: 0.78rem;">
+                                            True fullscreen native experience, walang browser bar, offline package.
+                                        </p>
+                                        <a href="{{ route('app.download.apk') }}" class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                                            <i class="fab fa-android me-1"></i> Download SecureLab.apk
+                                        </a>
+                                    </div>
+
+                                    <!-- Choice 2: PWA via Chrome -->
+                                    <div class="bg-white p-3 rounded-3 border shadow-sm">
+                                        <span class="fw-bold small text-dark d-block mb-1"><i class="fab fa-chrome text-primary me-1"></i> Option 2: Chrome Browser PWA</span>
+                                        <p class="small text-muted mb-0" style="font-size: 0.78rem;">
+                                            Pindutin ang <strong>(⋮) menu</strong> sa Chrome &gt; piliin ang <strong>"Install app"</strong> o <strong>"Add to Home screen"</strong>.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="p-3 rounded-3 bg-light border">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fab fa-apple text-dark fs-5"></i>
-                                <span class="fw-bold small text-dark">iPhone / iPad (Safari)</span>
-                            </div>
-                            <div class="small text-muted ps-4">
-                                Tap the <strong>Share button</strong> (<i class="fas fa-arrow-up-from-bracket"></i> at the bottom), scroll down, and tap <strong>"Add to Home Screen"</strong>.
+                        <!-- 🍏 IPHONE / IOS CARD -->
+                        <div class="col-md-6">
+                            <div class="p-3 h-100 rounded-4 border border-dark border-opacity-25 bg-dark bg-opacity-10 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fab fa-apple text-dark fs-3"></i>
+                                            <span class="fw-bold text-dark fs-6">iPhone / iOS</span>
+                                        </div>
+                                        <span class="badge bg-dark text-white rounded-pill px-2 py-1 small">Safari PWA</span>
+                                    </div>
+                                    <p class="small text-muted mb-3" style="font-size: 0.85rem;">
+                                        Para sa Apple iOS, gamitin ang built-in Apple Web App feature sa Safari nang walang App Store download:
+                                    </p>
+
+                                    <div class="bg-white p-3 rounded-3 border shadow-sm">
+                                        <ol class="small text-muted mb-0 ps-3" style="font-size: 0.82rem; line-height: 1.6;">
+                                            <li class="mb-2">Buksan ang portal na ito gamit ang <strong>Safari browser</strong>.</li>
+                                            <li class="mb-2">I-tap ang <strong>Share button</strong> (<i class="fas fa-arrow-up-from-bracket text-primary"></i>) sa ibaba ng screen.</li>
+                                            <li class="mb-2">Mag-scroll pababa at piliin ang <strong>"Add to Home Screen"</strong> (<i class="fas fa-plus-square text-success"></i>).</li>
+                                            <li>Pindutin ang <strong>"Add"</strong> sa kanang itaas.</li>
+                                        </ol>
+                                        <div class="alert alert-light border mt-3 mb-0 p-2 small text-muted text-center" style="font-size: 0.78rem;">
+                                            <i class="fas fa-shield-alt text-primary me-1"></i> Awtomatikong susuportahan ang <strong>Face ID & Touch ID</strong> Passkey login sa inyong iPhone!
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="p-3 rounded-3 bg-light border">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fas fa-laptop text-primary fs-5"></i>
-                                <span class="fw-bold small text-dark">PC / Mac (Chrome or Edge)</span>
-                            </div>
-                            <div class="small text-muted ps-4">
-                                Click the <strong>Install icon (<i class="fas fa-download"></i>)</strong> on the right side of the address bar, or click Menu (⋮) &gt; <strong>"Install SecureLab"</strong>.
+                    </div>
+
+                    <!-- Desktop Tip -->
+                    <div class="mt-3 p-3 rounded-3 bg-light border d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-laptop text-primary fs-5"></i>
+                            <div>
+                                <span class="fw-bold small text-dark d-block">Gamit ang PC o Laptop?</span>
+                                <small class="text-muted" style="font-size: 0.78rem;">Pindutin ang Install icon (<i class="fas fa-download"></i>) sa address bar ng Google Chrome o Microsoft Edge.</small>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-primary rounded-pill w-100 fw-bold py-2" data-bs-dismiss="modal">Got it, thank you!</button>
+                    <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
