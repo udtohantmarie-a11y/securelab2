@@ -1,4 +1,3 @@
-const CACHE_NAME = 'securelab-v1';
 const CACHE_NAME = 'securelab-v2';
 const ASSETS_TO_CACHE = [
     '/',

@@ -877,7 +877,6 @@
             <!-- Institutional Identity & Logos -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <img src="{{ asset('assets/img/tpc-logo.jpg') }}" alt="TPC Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=TPC&background=fff&color=007613'">
-                <img src="{{ asset('assets/img/securelab-fingerprint.png') }}" alt="SecureLab Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-dark shadow-sm">
                 <img src="{{ asset('assets/img/bsis-logo.jpg') }}" alt="BSIS Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=BSIS&background=0d6efd&color=fff'">
                 <div class="ms-1 d-flex flex-column">
                     <span class="fw-bold text-dark navbar-brand-title" style="font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.3px;">SECURELAB</span>
@@ -1716,7 +1715,7 @@
                             <small class="text-muted fw-semibold">Available for Android Devices & Apple iPhones</small>
                         </div>
                     </div>
-                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" onclick="this.blur()"></button>
                 </div>
 
                 <div class="modal-body p-4">
@@ -1888,6 +1887,15 @@
                     .catch((err) => console.warn('Extension channel message listener exception handled:', err));
             });
         }
+
+        // Prevent Chrome a11y warning when modal hides while child element has focus
+        document.querySelectorAll('.modal').forEach(modalEl => {
+            modalEl.addEventListener('hide.bs.modal', function () {
+                if (document.activeElement && modalEl.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            });
+        });
     </script>
 
     <script>
