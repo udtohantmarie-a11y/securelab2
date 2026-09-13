@@ -90,22 +90,19 @@
             <div class="body">
                 <h2>Authentication Required</h2>
                 <p>Hello <strong>{{ $userName }}</strong>,</p>
-                <p>We received a request to access your SecureLab Dashboard. You can securely log in with a single click using the button below:</p>
-                
-                <!-- AUTO-VERIFY BUTTON -->
-                <div class="btn-container">
-                    <a href="{{ route('otp.auto-verify', ['code' => $otpCode]) }}" class="btn-verify">
-                        Auto-Verify & Login
-                    </a>
-                </div>
-
-                <div class="divider">OR USE MANUAL CODE</div>
+                <p>We received a request to access your SecureLab Dashboard. Please enter the 6-digit verification code below to complete your sign in:</p>
                 
                 <!-- MANUAL OTP BOX -->
                 <div class="otp-container">
                     <div class="otp-box">
                         {{ $otpCode }}
                     </div>
+                </div>
+
+                <div class="btn-container">
+                    <a href="{{ route('otp.verify') }}" class="btn-verify">
+                        Verify Code & Login
+                    </a>
                 </div>
                 
                 <p>Please note that this access link and code are only valid for the next 10 minutes. For your security, <strong>never share this email with anyone.</strong></p>

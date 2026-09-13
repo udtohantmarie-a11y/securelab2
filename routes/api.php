@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; 
 
 // ==========================================================
 // 1. API to receive logs from ESP32 Hardware
@@ -362,7 +363,16 @@ Route::post('/hardware-log', function (Request $request) {
 // ==========================================================
 // 2. API for ESP32 to fetch all configured PINs (includes names)
 // ==========================================================
-Route::get('/get-room-pin/{room_id}', function ($room_id) {
+Route::get('/get-room-pin/{room_id}', function (Request $request, $room_id) {
+    // 🛡️ SECURITY: Verify hardware node or authorized admin
+    $deviceCode = $request->header('X-Device-Code') ?? $request->query('device_code') ?? $request->input('device_code', 'ESP32-BSIS-01');
+    $device = DB::table('devices')->where('device_code', $deviceCode)->where('room_id', $room_id)->first();
+    $isAdmin = Auth::check() && Auth::user()->role === 'Admin';
+
+    if (!$device && !$isAdmin) {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized hardware node.'], 401);
+    }
+
     $assignments = DB::table('room_assignments')
         ->join('users', 'room_assignments.user_id', '=', 'users.user_id')
         ->where('room_assignments.room_id', $room_id)
@@ -511,7 +521,19 @@ Route::post('/sync-bulk-logs', function (Request $request) {
 // ==========================================================
 // 8. Poll Commands (ALARM TRIGGER & MAIN WIFI ARE PASSED HERE)
 // ==========================================================
-Route::get('/poll-commands/{room_id}', function ($room_id) {
+Route::get('/poll-commands/{room_id}', function (Request $request, $room_id) {
+    // 🛡️ SECURITY: Verify hardware node or authorized admin/assigned user
+    $deviceCode = $request->header('X-Device-Code') ?? $request->query('device_code') ?? $request->input('device_code', 'ESP32-BSIS-01');
+    $device = DB::table('devices')->where('device_code', $deviceCode)->where('room_id', $room_id)->first();
+    $isAuthorized = Auth::check() && (
+        Auth::user()->role === 'Admin' ||
+        DB::table('room_assignments')->where('user_id', Auth::id())->where('room_id', $room_id)->where('is_active', 1)->exists()
+    );
+
+    if (!$device && !$isAuthorized) {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized hardware node or session.'], 401);
+    }
+
     $room = DB::table('rooms')->where('room_id', $room_id)->first();
     if (!$room) return response()->json(['status' => 'error'], 404);
 

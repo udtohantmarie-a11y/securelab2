@@ -515,9 +515,9 @@ class DashboardController extends Controller
             'receiver_id' => 'required|integer',
             'message'     => 'nullable|string',
             'images'      => 'nullable|array',
-            'images.*'    => 'image|max:5120', 
+            'images.*'    => 'image|max:5120|mimes:jpeg,png,jpg,gif,webp,svg', 
             'documents'   => 'nullable|array',
-            'documents.*' => 'file|max:10240', 
+            'documents.*' => 'file|max:10240|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,csv', 
         ]);
 
         $userId = Auth::id();
@@ -1565,6 +1565,10 @@ class DashboardController extends Controller
 
     public function testHardwareAlert()
     {
+        if (!Auth::check() || Auth::user()->role !== 'Admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized. Admin access required.'], 403);
+        }
+
         if (!cache('set_audit_alerts', true)) {
             return response()->json([
                 'success' => false, 
@@ -1770,8 +1774,24 @@ class DashboardController extends Controller
 
     public function toggleOccupancy(Request $request)
     {
+        $request->validate([
+            'room_id' => 'required|integer',
+            'status' => 'required|string|in:occupied,vacant'
+        ]);
+
         $roomId = $request->input('room_id');
         $status = $request->input('status'); 
+
+        $isAdmin = Auth::user()->role === 'Admin';
+        $isAssigned = DB::table('room_assignments')
+            ->where('user_id', Auth::id())
+            ->where('room_id', $roomId)
+            ->where('is_active', 1)
+            ->exists();
+
+        if (!$isAdmin && !$isAssigned) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized for this laboratory.'], 403);
+        }
 
         DB::table('rooms')->where('room_id', $roomId)->update([
             'occupancy_status' => $status,
@@ -1808,7 +1828,8 @@ class DashboardController extends Controller
             ->where('is_active', 1)
             ->first();
 
-        if (!$assignment) {
+        $isAdmin = Auth::user()->role === 'Admin';
+        if (!$isAdmin && !$assignment) {
             return back()->with('error', 'You are not authorized to configure this laboratory.');
         }
 

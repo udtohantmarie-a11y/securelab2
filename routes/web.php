@@ -12,17 +12,8 @@ use Illuminate\Support\Facades\DB;
 |--------------------------------------------------------------------------
 */
 
-// --- TESTING & DEPLOYMENT ROUTES (Public) ---
-Route::get('/test-hardware-alert', [DashboardController::class, 'testHardwareAlert']);
-
-// ROUTE FOR INFINITYFREE SYMLINK (Visit once in browser, then you can delete)
-Route::get('/setup-storage', function () {
-    \Illuminate\Support\Facades\Artisan::call('storage:link');
-    return 'Storage linked successfully! Your public storage folder is now working.';
-});
-
-// ROUTE TO CLEAR LARAVEL CACHE (Useful for shared hosting without terminal)
-Route::get('/clear-cache', function () {
+// --- SYSTEM MAINTENANCE ROUTES ---
+Route::get('/clear-cache', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
@@ -30,19 +21,20 @@ Route::get('/clear-cache', function () {
     return 'Laravel Cache Cleared Successfully!';
 });
 
-// ROUTE TO INITIALIZE PUSH SUBSCRIPTION TABLE
-Route::get('/run-push-migration', function () {
-    \App\Services\WebPushService::ensureTableExists();
-    return 'Push subscriptions table verified and ready!';
+Route::get('/setup-storage', function () {
+    if (!Auth::check() || Auth::user()->role !== 'Admin') {
+        abort(403, 'Unauthorized maintenance request.');
+    }
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    return 'Storage linked successfully!';
 });
 
-// ROUTE TO PROMOTE LOGGED IN USER TO ADMIN
-Route::get('/make-me-admin', function () {
-    if (!Auth::check()) {
-        return redirect()->route('login')->with('error', 'Please log in first.');
+Route::get('/run-push-migration', function () {
+    if (!Auth::check() || Auth::user()->role !== 'Admin') {
+        abort(403, 'Unauthorized maintenance request.');
     }
-    DB::table('users')->where('user_id', Auth::id())->update(['role' => 'Admin']);
-    return 'Success! Your account (' . Auth::user()->email . ') is now an ADMIN. <a href="/dashboard">Click here to go to Dashboard</a>';
+    \App\Services\WebPushService::ensureTableExists();
+    return 'Push subscriptions table verified and ready!';
 });
 
 // 1. Landing Page (Public Access)
@@ -61,22 +53,21 @@ Route::get('/login', function () {
     return redirect()->route('index')->with('error', 'Please login through the main portal.');
 })->name('login')->middleware('prevent-back');
 
-// 2. Authentication Routes
-Route::post('/register', [LoginController::class, 'register'])->name('register');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post'); 
-Route::post('/login/passkey', [LoginController::class, 'loginWithPasskey'])->name('login.passkey');
+// 2. Authentication Routes (with Rate Limiting / Brute-Force Protection)
+Route::post('/register', [LoginController::class, 'register'])->middleware('throttle:6,1')->name('register');
+Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:6,1')->name('login.post'); 
+Route::post('/login/passkey', [LoginController::class, 'loginWithPasskey'])->middleware('throttle:10,1')->name('login.passkey');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// OTP & Forgot Password
+// OTP & Forgot Password (with Rate Limiting)
 Route::get('/verify-otp', [LoginController::class, 'showOtpForm'])->name('otp.verify');
-Route::post('/verify-otp', [LoginController::class, 'verifyOtp'])->name('otp.verify.post');
-Route::post('/resend-otp', [LoginController::class, 'resendOtp'])->name('otp.resend');
-Route::get('/auto-verify-otp/{code}', [LoginController::class, 'autoVerifyOtp'])->name('otp.auto-verify');
+Route::post('/verify-otp', [LoginController::class, 'verifyOtp'])->middleware('throttle:6,1')->name('otp.verify.post');
+Route::post('/resend-otp', [LoginController::class, 'resendOtp'])->middleware('throttle:3,1')->name('otp.resend');
 
 Route::get('/forgot-password', [LoginController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/forgot-password', [LoginController::class, 'sendResetOtp'])->name('password.email');
+Route::post('/forgot-password', [LoginController::class, 'sendResetOtp'])->middleware('throttle:3,1')->name('password.email');
 Route::get('/reset-password', [LoginController::class, 'showResetPasswordForm'])->name('password.reset.form');
-Route::post('/reset-password', [LoginController::class, 'updatePassword'])->name('password.update');
+Route::post('/reset-password', [LoginController::class, 'updatePassword'])->middleware('throttle:5,1')->name('password.update');
 
 // 3. Protected Dashboard Routes 
 Route::middleware(['auth', 'prevent-back'])->group(function () {
@@ -85,6 +76,7 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/audit-logs', [DashboardController::class, 'logs'])->name('audit.logs');
     Route::get('/alerts', [DashboardController::class, 'alerts'])->name('dashboard.alerts');
+    Route::get('/test-hardware-alert', [DashboardController::class, 'testHardwareAlert'])->name('test.hardware-alert');
 
     // --- MESSAGES / INBOX ---
     Route::get('/messages', [DashboardController::class, 'inbox'])->name('messages.index');

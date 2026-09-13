@@ -97,6 +97,17 @@ class LoginController extends Controller
         $userId = session('otp_pending_user_id');
         if (!$userId) return redirect('/');
 
+        $attempts = session('otp_attempts', 0) + 1;
+        session(['otp_attempts' => $attempts]);
+
+        if ($attempts > 5) {
+            DB::table('users')->where('user_id', $userId)->update([
+                'verification_code' => null
+            ]);
+            session()->forget(['otp_pending_user_id', 'otp_attempts']);
+            return redirect('/')->withErrors(['email' => 'Maximum verification attempts exceeded. Please log in again.']);
+        }
+
         $user = DB::table('users')->where('user_id', $userId)->first();
 
         if ($user && $user->verification_code == $request->otp) {
@@ -108,42 +119,14 @@ class LoginController extends Controller
             // REMEMBER ME IS TRUE
             Auth::loginUsingId($userId, true);
 
-            session()->forget('otp_pending_user_id');
+            session()->forget(['otp_pending_user_id', 'otp_attempts']);
             session()->regenerate();
 
             return redirect()->intended('dashboard')->with('success', 'Biometric & System Authorization Verified.');
         }
 
-        return back()->withErrors(['otp' => 'Invalid or expired OTP code. Please try again.']);
-    }
-
-    // 🟢 UPDATED FUNCTION: MAGIC LINK / REDIRECT TO 2FA FORM
-    public function autoVerifyOtp($code)
-    {
-        $user = DB::table('users')
-            ->where('verification_code', $code)
-            ->whereNotNull('verification_code')
-            ->first();
-
-        if ($user) {
-
-            // 1. I-clear ang code para hindi na magamit ulit
-            DB::table('users')->where('user_id', $user->user_id)->update([
-                'verification_code' => null
-            ]);
-
-            // 2. I-login agad ang user (Remember Me = true)
-            Auth::loginUsingId($user->user_id, true);
-
-            // 3. Linisin ang old session
-            session()->forget('otp_pending_user_id');
-            session()->regenerate();
-
-            // 4. DIRETTSO NA SA DASHBOARD (Wala nang 2FA page na bubukas)
-            return redirect()->intended('dashboard')->with('success', 'Email automatically verified! Welcome back.');
-        }
-
-        return redirect('/')->withErrors(['email' => 'Invalid or expired magic link. Please log in again.']);
+        $remaining = 5 - $attempts;
+        return back()->withErrors(['otp' => "Invalid or expired OTP code. {$remaining} attempts remaining."]);
     }
 
     public function resendOtp()
