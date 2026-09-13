@@ -6,9 +6,9 @@
     <title>Forgot Password | SecureLab</title>
     
     <!-- 🟢 Favicon Icon Logo -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-fingerprint-192.png') }}">
     
     <!-- Light Theme Color -->
     <meta name="theme-color" content="#f4f7f6">

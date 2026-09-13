@@ -12,9 +12,9 @@
     <title>IoT Smart Lock | BSIS Computer Laboratory</title>
 
     <!-- 🟢 Title Page Icon Logo / Favicon -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-fingerprint-192.png') }}">
 
     <!-- Light Theme Color -->
     <meta name="theme-color" content="#f4f7f6">
@@ -873,7 +873,7 @@
             <!-- Institutional Identity & Logos -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <img src="{{ asset('assets/img/tpc-logo.jpg') }}" alt="TPC Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=TPC&background=fff&color=007613'">
-                <img src="{{ asset('assets/img/bsis-logo.jpg') }}" alt="BSIS Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=BSIS&background=0d6efd&color=fff'">
+                <img src="{{ asset('assets/img/securelab-fingerprint.png') }}" alt="SecureLab Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-dark shadow-sm">
                 <div class="ms-1 d-flex flex-column">
                     <span class="fw-bold text-dark navbar-brand-title" style="font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.3px;">SECURELAB</span>
                     <small class="text-muted fw-semibold navbar-brand-subtitle" style="font-size: 0.72rem; letter-spacing: 0.5px;">BSIS COMPUTER LABORATORY</small>
