@@ -3,6 +3,9 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
 <meta name="theme-color" content="#0a192f">
+<link rel="icon" type="image/jpeg" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+<link rel="apple-touch-icon" href="{{ asset('assets/img/bsis-logo.jpg') }}">
 <link rel="manifest" href="{{ asset('manifest.json') }}">
 
 <!-- Bootstrap 5.3 & FontAwesome -->

@@ -8,8 +8,9 @@
     <title>SecureLab | Smart Access</title>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/jpeg" href="/assets/img/bsis-logo.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/assets/img/bsis-logo.jpg">
     <meta name="theme-color" content="#4f46e5">
 
     <link rel="preconnect" href="https://fonts.bunny.net">

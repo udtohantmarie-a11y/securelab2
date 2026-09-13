@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Forgot Password | SecureLab</title>
     
+    <!-- 🟢 Favicon Icon Logo -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    
     <!-- Light Theme Color -->
     <meta name="theme-color" content="#f4f7f6">
     

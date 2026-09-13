@@ -11,11 +11,15 @@
 
     <title>IoT Smart Lock | BSIS Computer Laboratory</title>
 
+    <!-- 🟢 Title Page Icon Logo / Favicon -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/bsis-logo.jpg') }}">
+
     <!-- Light Theme Color -->
     <meta name="theme-color" content="#f4f7f6">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
