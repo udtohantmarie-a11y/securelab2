@@ -12,6 +12,9 @@
     <title>IoT Smart Lock | BSIS Computer Laboratory</title>
 
     <!-- 🟢 Title Page Icon Logo / Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-fingerprint-192.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}?v=3">
     <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}?v=3">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=3">
@@ -874,6 +877,7 @@
             <!-- Institutional Identity & Logos -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
                 <img src="{{ asset('assets/img/tpc-logo.jpg') }}" alt="TPC Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=TPC&background=fff&color=007613'">
+                <img src="{{ asset('assets/img/securelab-fingerprint.png') }}" alt="SecureLab Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-dark shadow-sm">
                 <img src="{{ asset('assets/img/bsis-logo.jpg') }}" alt="BSIS Logo" width="38" height="38" class="rounded-circle object-fit-cover bg-white shadow-sm" onerror="this.src='https://ui-avatars.com/api/?name=BSIS&background=0d6efd&color=fff'">
                 <div class="ms-1 d-flex flex-column">
                     <span class="fw-bold text-dark navbar-brand-title" style="font-size: 1.1rem; line-height: 1.1; letter-spacing: -0.3px;">SECURELAB</span>
@@ -1838,21 +1842,33 @@
         });
 
         const installBtnElement = document.getElementById('installApp');
-        if (installBtnElement) {
-            // Check if already launched in standalone PWA mode
-            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-                installBtnElement.innerHTML = '<i class="fas fa-check-circle me-2"></i>PWA Installed';
-                installBtnElement.classList.replace('btn-outline-success', 'btn-success');
-            }
+        const isAppMode = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone === true || 
+                          document.referrer.includes('android-app://') ||
+                          window.matchMedia('(display-mode: fullscreen)').matches ||
+                          window.matchMedia('(display-mode: minimal-ui)').matches;
 
+        if (isAppMode) {
+            // 🟢 TANGGALIN ANG BUTTON KAPAG NA-INSTALL O NAKA-BUKAS NA SA APP
+            if (installBtnElement) installBtnElement.classList.add('d-none');
+            const navAppLink = document.querySelector('a[data-bs-target="#pwaGuideModal"]');
+            if (navAppLink && navAppLink.parentElement) navAppLink.parentElement.classList.add('d-none');
+        }
+
+        window.addEventListener('appinstalled', () => {
+            if (installBtnElement) installBtnElement.classList.add('d-none');
+            const navAppLink = document.querySelector('a[data-bs-target="#pwaGuideModal"]');
+            if (navAppLink && navAppLink.parentElement) navAppLink.parentElement.classList.add('d-none');
+        });
+
+        if (installBtnElement && !isAppMode) {
             installBtnElement.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     try {
                         await deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
                         if (outcome === 'accepted') {
-                            installBtnElement.innerHTML = '<i class="fas fa-check-circle me-2"></i>PWA Installed';
-                            installBtnElement.classList.replace('btn-outline-success', 'btn-success');
+                            installBtnElement.classList.add('d-none');
                         }
                         deferredPrompt = null;
                     } catch (err) {
